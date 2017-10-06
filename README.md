@@ -1,2 +1,3 @@
 # netbeans-sharepoint-online
-Maniplate SharePoint Online
+
+Let's challenge SharePoint Manager https://spm.codeplex.com/
