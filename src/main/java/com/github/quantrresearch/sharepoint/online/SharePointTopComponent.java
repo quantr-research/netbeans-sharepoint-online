@@ -3,6 +3,8 @@ package com.github.quantrresearch.sharepoint.online;
 
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -95,7 +97,9 @@ public final class SharePointTopComponent extends TopComponent {
 		tree.setCellRenderer(new AntlrTreeRenderer());
 		tree.setShowsRootHandles(true);
 
-		String password = "ppffrmit1q!@#";
+		JPasswordField pwd = new JPasswordField(10);
+		int action = JOptionPane.showConfirmDialog(null, pwd, "Please input office365 password", JOptionPane.OK_CANCEL_OPTION);
+		String password = new String(pwd.getPassword());
 		String domain = "quantr";
 		Pair<String, String> token = SPOnline.login("peter@quantr.hk", password, domain);
 		if (token != null) {

@@ -41,7 +41,7 @@
 				<version>3.13</version>
 				<extensions>true</extensions>
 				<configuration>
-					<useOSGiDependencies>true</useOSGiDependencies>
+					<useOSGiDependencies>false</useOSGiDependencies>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -74,6 +74,13 @@
 		</repository>
 	</repositories>
 	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+			<type>jar</type>
+		</dependency>
 		<dependency>
 			<groupId>org.netbeans.api</groupId>
 			<artifactId>org-netbeans-api-annotations-common</artifactId>
