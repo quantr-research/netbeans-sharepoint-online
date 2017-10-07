@@ -121,11 +121,32 @@
 			<version>RELEASE82</version>
 			<type>jar</type>
 		</dependency>
-	 <dependency>
-	  <groupId>com.github.mcheung63</groupId>
-	  <artifactId>peter-swing</artifactId>
-	  <version>20170929</version>
-	  <type>jar</type>
-	 </dependency>
+		<dependency>
+			<groupId>com.github.mcheung63</groupId>
+			<artifactId>peter-swing</artifactId>
+			<version>20170929</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>com.github.mcheung63</groupId>
+			<artifactId>Sharepoint-Java-API</artifactId>
+			<version>1.0</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160810</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
 	</dependencies>
 </project>
