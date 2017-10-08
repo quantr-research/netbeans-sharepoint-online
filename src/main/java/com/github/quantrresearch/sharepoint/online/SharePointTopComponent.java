@@ -38,15 +38,15 @@ import org.openide.util.NbBundle.Messages;
 	"HINT_SharePointTopComponent=This is a SharePoint window"
 })
 public final class SharePointTopComponent extends TopComponent {
-
-	AntlrTreeNode rootNode = new AntlrTreeNode("Grammar", "Grammar");
-	AntlrTreeModel treeModel = new AntlrTreeModel(rootNode);
-
+	
+	SharePointTreeNode rootNode = new SharePointTreeNode("SharePoint", "root");
+	SharePointTreeModel treeModel = new SharePointTreeModel(rootNode);
+	
 	public SharePointTopComponent() {
 		initComponents();
 		setName(Bundle.CTL_SharePointTopComponent());
 		setToolTipText(Bundle.HINT_SharePointTopComponent());
-
+		
 		initTree();
 	}
 
@@ -74,30 +74,33 @@ public final class SharePointTopComponent extends TopComponent {
 	public void componentOpened() {
 		// TODO add custom code on component opening
 	}
-
+	
 	@Override
 	public void componentClosed() {
 		// TODO add custom code on component closing
 	}
-
+	
 	void writeProperties(java.util.Properties p) {
 		// better to version settings since initial version as advocated at
 		// http://wiki.apidesign.org/wiki/PropertyFiles
 		p.setProperty("version", "1.0");
 		// TODO store your settings
 	}
-
+	
 	void readProperties(java.util.Properties p) {
 		String version = p.getProperty("version");
 		// TODO read your settings according to their version
 	}
-
+	
 	private void initTree() {
-//		tree.setModel(treeModel);
-//		tree.setCellRenderer(new AntlrTreeRenderer());
-//		tree.setShowsRootHandles(true);
-
 		try {
+			tree.setModel(treeModel);
+			tree.setCellRenderer(new SharePointTreeRenderer());
+			tree.setShowsRootHandles(true);
+			
+			rootNode.add(new SharePointTreeNode("SharePoint2", "root"));
+			rootNode.add(new SharePointTreeNode("SharePoint3", "root"));
+			
 			JPasswordField pwd = new JPasswordField(10);
 			int action = JOptionPane.showConfirmDialog(null, pwd, "Please input office365 password", JOptionPane.OK_CANCEL_OPTION);
 			String password = new String(pwd.getPassword());
@@ -111,12 +114,12 @@ public final class SharePointTopComponent extends TopComponent {
 				JSONObject json = new JSONObject(jsonString);
 				String formDigestValue = json.getJSONObject("d").getJSONObject("GetContextWebInformation").getString("FormDigestValue");
 				System.out.println("FormDigestValue=" + formDigestValue);
-
+				
 				jsonString = SPOnline.get(token, domain, "/_api/web");
 				if (jsonString != null) {
 					System.out.println(CommonLib.prettyFormatJson(jsonString));
 				}
-
+				
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
