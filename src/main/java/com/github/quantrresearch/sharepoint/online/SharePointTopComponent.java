@@ -34,7 +34,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @Messages({
 	"CTL_SharePointAction=SharePoint",
-	"CTL_SharePointTopComponent=SharePoint Window",
+	"CTL_SharePointTopComponent=SharePoint",
 	"HINT_SharePointTopComponent=This is a SharePoint window"
 })
 public final class SharePointTopComponent extends TopComponent {
@@ -93,27 +93,33 @@ public final class SharePointTopComponent extends TopComponent {
 	}
 
 	private void initTree() {
-		tree.setModel(treeModel);
-		tree.setCellRenderer(new AntlrTreeRenderer());
-		tree.setShowsRootHandles(true);
+//		tree.setModel(treeModel);
+//		tree.setCellRenderer(new AntlrTreeRenderer());
+//		tree.setShowsRootHandles(true);
 
-		JPasswordField pwd = new JPasswordField(10);
-		int action = JOptionPane.showConfirmDialog(null, pwd, "Please input office365 password", JOptionPane.OK_CANCEL_OPTION);
-		String password = new String(pwd.getPassword());
-		String domain = "quantr";
-		Pair<String, String> token = SPOnline.login("peter@quantr.hk", password, domain);
-		if (token != null) {
-			String jsonString = SPOnline.post(token, domain, "/_api/contextinfo", null, null);
-			System.out.println(CommonLib.prettyFormatJson(jsonString));
-			JSONObject json = new JSONObject(jsonString);
-			String formDigestValue = json.getJSONObject("d").getJSONObject("GetContextWebInformation").getString("FormDigestValue");
-			System.out.println("FormDigestValue=" + formDigestValue);
-
-			jsonString = SPOnline.get(token, domain, "/_api/web");
-			if (jsonString != null) {
+		try {
+			JPasswordField pwd = new JPasswordField(10);
+			int action = JOptionPane.showConfirmDialog(null, pwd, "Please input office365 password", JOptionPane.OK_CANCEL_OPTION);
+			String password = new String(pwd.getPassword());
+			String domain = "quantr";
+			Pair<String, String> token = SPOnline.login("peter@quantr.hk", password, domain);
+			if (token != null) {
+				System.out.println(token.getLeft());
+				System.out.println(token.getRight());
+				String jsonString = SPOnline.post(token, domain, "/_api/contextinfo", null, null);
 				System.out.println(CommonLib.prettyFormatJson(jsonString));
-			}
+				JSONObject json = new JSONObject(jsonString);
+				String formDigestValue = json.getJSONObject("d").getJSONObject("GetContextWebInformation").getString("FormDigestValue");
+				System.out.println("FormDigestValue=" + formDigestValue);
 
+				jsonString = SPOnline.get(token, domain, "/_api/web");
+				if (jsonString != null) {
+					System.out.println(CommonLib.prettyFormatJson(jsonString));
+				}
+
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 }
