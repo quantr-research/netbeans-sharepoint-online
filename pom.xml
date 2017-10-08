@@ -192,5 +192,11 @@
 	  <version>RELEASE82</version>
 	  <type>jar</type>
 	 </dependency>
+	 <dependency>
+	  <groupId>org.reflections</groupId>
+	  <artifactId>reflections</artifactId>
+	  <version>0.9.10</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 </project>

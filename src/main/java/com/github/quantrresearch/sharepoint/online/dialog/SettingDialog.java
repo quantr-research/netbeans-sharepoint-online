@@ -1,6 +1,8 @@
 // License : Apache License Version 2.0  https://www.apache.org/licenses/LICENSE-2.0
 package com.github.quantrresearch.sharepoint.online.dialog;
 
+import org.netbeans.api.keyring.Keyring;
+
 /**
  *
  * @author Peter <mcheung63@hotmail.com>
@@ -15,6 +17,12 @@ public class SettingDialog extends javax.swing.JDialog {
 	public SettingDialog(java.awt.Frame parent, boolean modal) {
 		super(parent, modal);
 		initComponents();
+		String domain = Keyring.read("sharepointDomain") == null ? null : new String(Keyring.read("sharepointDomain"));
+		String username = Keyring.read("sharepointUsername") == null ? null : new String(Keyring.read("sharepointUsername"));
+		String password = Keyring.read("sharepointPassword") == null ? null : new String(Keyring.read("sharepointPassword"));
+		domainTextField.setText(domain);
+		usernameTextField.setText(username);
+		passwordField.setText(password);
 	}
 
 	/**
@@ -35,6 +43,7 @@ public class SettingDialog extends javax.swing.JDialog {
         saveButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle(org.openide.util.NbBundle.getMessage(SettingDialog.class, "SettingDialog.title")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SettingDialog.class, "SettingDialog.jLabel1.text")); // NOI18N
 

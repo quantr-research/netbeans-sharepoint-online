@@ -30,7 +30,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = false)
 @ActionID(category = "Window", id = "com.github.quantrresearch.sharepoint.online.SharePointTopComponent")
-@ActionReference(path = "Menu/Window/SharePoint" /*, position = 333 */)
+@ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
 		displayName = "#CTL_SharePointAction",
 		preferredID = "SharePointTopComponent"
@@ -42,7 +42,7 @@ import org.openide.util.NbBundle.Messages;
 })
 public final class SharePointTopComponent extends TopComponent {
 
-	SharePointTreeNode rootNode = new SharePointTreeNode("SharePoint", "root");
+	SharePointTreeNode rootNode = new SharePointTreeNode("Disconnect", "disconnect", "cross");
 	SharePointTreeModel treeModel = new SharePointTreeModel(rootNode);
 
 	public SharePointTopComponent() {
@@ -64,6 +64,7 @@ public final class SharePointTopComponent extends TopComponent {
         jScrollPane1 = new javax.swing.JScrollPane();
         tree = new javax.swing.JTree();
 
+        settingMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/github/quantrresearch/sharepoint/online/icon/wrench.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(settingMenuItem, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.settingMenuItem.text")); // NOI18N
         settingMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -72,9 +73,13 @@ public final class SharePointTopComponent extends TopComponent {
         });
         settingPopupMenu.add(settingMenuItem);
 
-        setComponentPopupMenu(settingPopupMenu);
         setLayout(new java.awt.BorderLayout());
 
+        tree.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                treeMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tree);
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -91,6 +96,12 @@ public final class SharePointTopComponent extends TopComponent {
 		}
     }//GEN-LAST:event_settingMenuItemActionPerformed
 
+    private void treeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_treeMouseClicked
+		if (SwingUtilities.isRightMouseButton(evt)) {
+			settingPopupMenu.show(tree, evt.getX(), evt.getY());
+		}
+    }//GEN-LAST:event_treeMouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuItem settingMenuItem;
@@ -99,24 +110,18 @@ public final class SharePointTopComponent extends TopComponent {
     // End of variables declaration//GEN-END:variables
 	@Override
 	public void componentOpened() {
-		// TODO add custom code on component opening
 	}
 
 	@Override
 	public void componentClosed() {
-		// TODO add custom code on component closing
 	}
 
 	void writeProperties(java.util.Properties p) {
-		// better to version settings since initial version as advocated at
-		// http://wiki.apidesign.org/wiki/PropertyFiles
 		p.setProperty("version", "1.0");
-		// TODO store your settings
 	}
 
 	void readProperties(java.util.Properties p) {
 		String version = p.getProperty("version");
-		// TODO read your settings according to their version
 	}
 
 	private void initTree() {
@@ -128,16 +133,20 @@ public final class SharePointTopComponent extends TopComponent {
 			rootNode.add(new SharePointTreeNode("SharePoint2", "root"));
 			rootNode.add(new SharePointTreeNode("SharePoint3", "root"));
 
-			String domain = "quantr";
-			Pair<String, String> token = SPOnline.login(username, password, domain);
-			if (token != null) {
-				String jsonString = SPOnline.post(token, domain, "/_api/contextinfo", null, null);
-				JSONObject json = new JSONObject(jsonString);
-				jsonString = SPOnline.get(token, domain, "/_api/web");
-				if (jsonString != null) {
-					System.out.println(CommonLib.prettyFormatJson(jsonString));
-				}
+			String domain = Keyring.read("sharepointDomain") == null ? null : new String(Keyring.read("sharepointDomain"));
+			String username = Keyring.read("sharepointUsername") == null ? null : new String(Keyring.read("sharepointUsername"));
+			String password = Keyring.read("sharepointPassword") == null ? null : new String(Keyring.read("sharepointPassword"));
 
+			if (domain != null && username != null && password != null) {
+				Pair<String, String> token = SPOnline.login(username, password, domain);
+				if (token != null) {
+					String jsonString = SPOnline.post(token, domain, "/_api/contextinfo", null, null);
+					JSONObject json = new JSONObject(jsonString);
+					jsonString = SPOnline.get(token, domain, "/_api/web");
+					if (jsonString != null) {
+						System.out.println(CommonLib.prettyFormatJson(jsonString));
+					}
+				}
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
