@@ -1,12 +1,15 @@
 // License : Apache License Version 2.0  https://www.apache.org/licenses/LICENSE-2.0
 package com.github.quantrresearch.sharepoint.online;
 
+import com.github.quantrresearch.sharepoint.online.dialog.SettingDialog;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
+import org.netbeans.api.keyring.Keyring;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -38,15 +41,15 @@ import org.openide.util.NbBundle.Messages;
 	"HINT_SharePointTopComponent=This is a SharePoint window"
 })
 public final class SharePointTopComponent extends TopComponent {
-	
+
 	SharePointTreeNode rootNode = new SharePointTreeNode("SharePoint", "root");
 	SharePointTreeModel treeModel = new SharePointTreeModel(rootNode);
-	
+
 	public SharePointTopComponent() {
 		initComponents();
 		setName(Bundle.CTL_SharePointTopComponent());
 		setToolTipText(Bundle.HINT_SharePointTopComponent());
-		
+
 		initTree();
 	}
 
@@ -56,9 +59,20 @@ public final class SharePointTopComponent extends TopComponent {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        settingPopupMenu = new javax.swing.JPopupMenu();
+        settingMenuItem = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
         tree = new javax.swing.JTree();
 
+        org.openide.awt.Mnemonics.setLocalizedText(settingMenuItem, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.settingMenuItem.text")); // NOI18N
+        settingMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                settingMenuItemActionPerformed(evt);
+            }
+        });
+        settingPopupMenu.add(settingMenuItem);
+
+        setComponentPopupMenu(settingPopupMenu);
         setLayout(new java.awt.BorderLayout());
 
         jScrollPane1.setViewportView(tree);
@@ -66,60 +80,64 @@ public final class SharePointTopComponent extends TopComponent {
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void settingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingMenuItemActionPerformed
+		SettingDialog settingDialog = new SettingDialog(null, true);
+		settingDialog.setLocationRelativeTo(null);
+		settingDialog.setVisible(true);
+		if (settingDialog.isSave) {
+			Keyring.save("sharepointDomain", settingDialog.domainTextField.getText().toCharArray(), null);
+			Keyring.save("sharepointUsername", settingDialog.usernameTextField.getText().toCharArray(), null);
+			Keyring.save("sharepointPassword", settingDialog.passwordField.getText().toCharArray(), null);
+		}
+    }//GEN-LAST:event_settingMenuItemActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenuItem settingMenuItem;
+    private javax.swing.JPopupMenu settingPopupMenu;
     private javax.swing.JTree tree;
     // End of variables declaration//GEN-END:variables
 	@Override
 	public void componentOpened() {
 		// TODO add custom code on component opening
 	}
-	
+
 	@Override
 	public void componentClosed() {
 		// TODO add custom code on component closing
 	}
-	
+
 	void writeProperties(java.util.Properties p) {
 		// better to version settings since initial version as advocated at
 		// http://wiki.apidesign.org/wiki/PropertyFiles
 		p.setProperty("version", "1.0");
 		// TODO store your settings
 	}
-	
+
 	void readProperties(java.util.Properties p) {
 		String version = p.getProperty("version");
 		// TODO read your settings according to their version
 	}
-	
+
 	private void initTree() {
 		try {
 			tree.setModel(treeModel);
 			tree.setCellRenderer(new SharePointTreeRenderer());
 			tree.setShowsRootHandles(true);
-			
+
 			rootNode.add(new SharePointTreeNode("SharePoint2", "root"));
 			rootNode.add(new SharePointTreeNode("SharePoint3", "root"));
-			
-			JPasswordField pwd = new JPasswordField(10);
-			int action = JOptionPane.showConfirmDialog(null, pwd, "Please input office365 password", JOptionPane.OK_CANCEL_OPTION);
-			String password = new String(pwd.getPassword());
+
 			String domain = "quantr";
-			Pair<String, String> token = SPOnline.login("peter@quantr.hk", password, domain);
+			Pair<String, String> token = SPOnline.login(username, password, domain);
 			if (token != null) {
-				System.out.println(token.getLeft());
-				System.out.println(token.getRight());
 				String jsonString = SPOnline.post(token, domain, "/_api/contextinfo", null, null);
-				System.out.println(CommonLib.prettyFormatJson(jsonString));
 				JSONObject json = new JSONObject(jsonString);
-				String formDigestValue = json.getJSONObject("d").getJSONObject("GetContextWebInformation").getString("FormDigestValue");
-				System.out.println("FormDigestValue=" + formDigestValue);
-				
 				jsonString = SPOnline.get(token, domain, "/_api/web");
 				if (jsonString != null) {
 					System.out.println(CommonLib.prettyFormatJson(jsonString));
 				}
-				
+
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
