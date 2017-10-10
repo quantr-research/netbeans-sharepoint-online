@@ -33,7 +33,7 @@ public class SharePointTreeNode extends DefaultMutableTreeNode {
 		this(text, type, null, null);
 	}
 
-	public SharePointTreeNode(String text, String type, String icon, String object) {
+	public SharePointTreeNode(String text, String type, String icon, Object object) {
 		super();
 		this.text = text;
 		this.type = type;

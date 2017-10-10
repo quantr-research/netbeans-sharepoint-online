@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.netbeans.api.keyring.Keyring;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -226,26 +227,30 @@ public final class SharePointTopComponent extends TopComponent {
 	}
 
 	private void initServerNode(SharePointTreeNode serverNode) {
-		SharePointTreeNode listsNode = new SharePointTreeNode("List", "lists", "table");
+		SharePointTreeNode listsNode = new SharePointTreeNode("List", "lists", "table", null);
 		serverNode.add(listsNode);
 		initLists(listsNode);
-		serverNode.add(new SharePointTreeNode("Page", "oages", "page"));
-		serverNode.add(new SharePointTreeNode("Document library", "Document libraries", "book"));
-		serverNode.add(new SharePointTreeNode("App", "app", "brick"));
-		serverNode.add(new SharePointTreeNode("Subsite", "subsites", "world"));
+		serverNode.add(new SharePointTreeNode("Page", "pages", "page", null));
+		serverNode.add(new SharePointTreeNode("Document library", "Document libraries", "book", null));
+		serverNode.add(new SharePointTreeNode("App", "app", "brick", null));
+		serverNode.add(new SharePointTreeNode("Subsite", "subsites", "world", null));
 	}
 
 	private void initLists(SharePointTreeNode listsNode) {
-		Pair<String, String> token = SPOnline.login("guest1@quantr.hk", password, domain);
+		ServerInfo serverInfo = (ServerInfo) Helper.get(listsNode, ServerInfo.class);
+		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
+
 		if (token != null) {
-			String jsonString = SPOnline.post(token, domain, "/_api/contextinfo", null, null);
-			System.out.println(CommonLib.prettyFormatJson(jsonString));
-			JSONObject json = new JSONObject(jsonString);
-			String formDigestValue = json.getJSONObject("d").getJSONObject("GetContextWebInformation").getString("FormDigestValue");
-			System.out.println("FormDigestValue=" + formDigestValue);
-			jsonString = SPOnline.get(token, domain, "/_api/web/lists");
+			String jsonString = SPOnline.post(token, serverInfo.domain, "/_api/contextinfo", null, null);
+			//String formDigestValue = json.getJSONObject("d").getJSONObject("GetContextWebInformation").getString("FormDigestValue");
+			jsonString = SPOnline.get(token, serverInfo.domain, "/_api/web/lists?$select=ID,Title");
 			if (jsonString != null) {
-				System.out.println(CommonLib.prettyFormatJson(jsonString));
+				JSONObject json = new JSONObject(jsonString);
+				JSONArray array = json.getJSONObject("d").getJSONArray("results");
+				for (int x = 0; x < array.length(); x++) {
+					JSONObject j = array.getJSONObject(x);
+					listsNode.add(new SharePointTreeNode(j.getString("Title"), "list", "table", null));
+				}
 			}
 		}
 	}
