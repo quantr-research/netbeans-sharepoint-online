@@ -36,7 +36,7 @@ public class SharePointTreeNode extends DefaultMutableTreeNode {
 		Set<String> fileNames = reflections.getResources(Pattern.compile(".*\\.png"));
 		for (String filepath : fileNames) {
 			String filename = new File(filepath).getName();
-			System.out.println("filename=" + filename + " > " + SharePointTreeNode.class.getClassLoader().getResource("/com/github/quantrresearch/sharepoint/online/icon/" + filename));
+			//System.out.println("filename=" + filename + " > " + SharePointTreeNode.class.getClassLoader().getResource("/com/github/quantrresearch/sharepoint/online/icon/" + filename));
 			iconRoot.put(filename, new ImageIcon(SharePointTreeNode.class.getClassLoader().getResource("/com/github/quantrresearch/sharepoint/online/icon/" + filename)));
 		}
 	}

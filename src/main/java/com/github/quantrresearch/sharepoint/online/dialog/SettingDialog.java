@@ -17,12 +17,6 @@ public class SettingDialog extends javax.swing.JDialog {
 	public SettingDialog(java.awt.Frame parent, boolean modal) {
 		super(parent, modal);
 		initComponents();
-		String domain = Keyring.read("sharepointDomain") == null ? null : new String(Keyring.read("sharepointDomain"));
-		String username = Keyring.read("sharepointUsername") == null ? null : new String(Keyring.read("sharepointUsername"));
-		String password = Keyring.read("sharepointPassword") == null ? null : new String(Keyring.read("sharepointPassword"));
-		domainTextField.setText(domain);
-		usernameTextField.setText(username);
-		passwordField.setText(password);
 	}
 
 	/**

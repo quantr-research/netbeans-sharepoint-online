@@ -4,8 +4,6 @@ package com.github.quantrresearch.sharepoint.online;
 import com.github.quantrresearch.sharepoint.online.dialog.SettingDialog;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
@@ -60,18 +58,38 @@ public final class SharePointTopComponent extends TopComponent {
     private void initComponents() {
 
         settingPopupMenu = new javax.swing.JPopupMenu();
-        settingMenuItem = new javax.swing.JMenuItem();
+        addserverMenuItem = new javax.swing.JMenuItem();
+        editServerMenuItem = new javax.swing.JMenuItem();
+        deleteServerMenuItem = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
         tree = new javax.swing.JTree();
 
-        settingMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/github/quantrresearch/sharepoint/online/icon/wrench.png"))); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(settingMenuItem, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.settingMenuItem.text")); // NOI18N
-        settingMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        addserverMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/github/quantrresearch/sharepoint/online/icon/add.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(addserverMenuItem, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.addserverMenuItem.text")); // NOI18N
+        addserverMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                settingMenuItemActionPerformed(evt);
+                addserverMenuItemActionPerformed(evt);
             }
         });
-        settingPopupMenu.add(settingMenuItem);
+        settingPopupMenu.add(addserverMenuItem);
+
+        editServerMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/github/quantrresearch/sharepoint/online/icon/pencil.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(editServerMenuItem, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.editServerMenuItem.text")); // NOI18N
+        editServerMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editServerMenuItemActionPerformed(evt);
+            }
+        });
+        settingPopupMenu.add(editServerMenuItem);
+
+        deleteServerMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/github/quantrresearch/sharepoint/online/icon/cross.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(deleteServerMenuItem, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.deleteServerMenuItem.text")); // NOI18N
+        deleteServerMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteServerMenuItemActionPerformed(evt);
+            }
+        });
+        settingPopupMenu.add(deleteServerMenuItem);
 
         setLayout(new java.awt.BorderLayout());
 
@@ -85,7 +103,13 @@ public final class SharePointTopComponent extends TopComponent {
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void settingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingMenuItemActionPerformed
+    private void treeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_treeMouseClicked
+		if (SwingUtilities.isRightMouseButton(evt)) {
+			settingPopupMenu.show(tree, evt.getX(), evt.getY());
+		}
+    }//GEN-LAST:event_treeMouseClicked
+
+    private void addserverMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addserverMenuItemActionPerformed
 		SettingDialog settingDialog = new SettingDialog(null, true);
 		settingDialog.setLocationRelativeTo(null);
 		settingDialog.setVisible(true);
@@ -94,17 +118,34 @@ public final class SharePointTopComponent extends TopComponent {
 			Keyring.save("sharepointUsername", settingDialog.usernameTextField.getText().toCharArray(), null);
 			Keyring.save("sharepointPassword", settingDialog.passwordField.getText().toCharArray(), null);
 		}
-    }//GEN-LAST:event_settingMenuItemActionPerformed
+    }//GEN-LAST:event_addserverMenuItemActionPerformed
 
-    private void treeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_treeMouseClicked
-		if (SwingUtilities.isRightMouseButton(evt)) {
-			settingPopupMenu.show(tree, evt.getX(), evt.getY());
+    private void editServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editServerMenuItemActionPerformed
+		SettingDialog settingDialog = new SettingDialog(null, true);
+		settingDialog.setLocationRelativeTo(null);
+		String domain = Keyring.read("sharepointDomain") == null ? null : new String(Keyring.read("sharepointDomain"));
+		String username = Keyring.read("sharepointUsername") == null ? null : new String(Keyring.read("sharepointUsername"));
+		String password = Keyring.read("sharepointPassword") == null ? null : new String(Keyring.read("sharepointPassword"));
+		settingDialog.domainTextField.setText(domain);
+		settingDialog.usernameTextField.setText(username);
+		settingDialog.passwordField.setText(password);
+		settingDialog.setVisible(true);
+		if (settingDialog.isSave) {
+			Keyring.save("sharepointDomain", settingDialog.domainTextField.getText().toCharArray(), null);
+			Keyring.save("sharepointUsername", settingDialog.usernameTextField.getText().toCharArray(), null);
+			Keyring.save("sharepointPassword", settingDialog.passwordField.getText().toCharArray(), null);
 		}
-    }//GEN-LAST:event_treeMouseClicked
+    }//GEN-LAST:event_editServerMenuItemActionPerformed
+
+    private void deleteServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteServerMenuItemActionPerformed
+		// TODO add your handling code here:
+    }//GEN-LAST:event_deleteServerMenuItemActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem addserverMenuItem;
+    private javax.swing.JMenuItem deleteServerMenuItem;
+    private javax.swing.JMenuItem editServerMenuItem;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JMenuItem settingMenuItem;
     private javax.swing.JPopupMenu settingPopupMenu;
     private javax.swing.JTree tree;
     // End of variables declaration//GEN-END:variables
