@@ -4,6 +4,9 @@ package com.github.quantrresearch.sharepoint.online;
 import com.github.quantrresearch.sharepoint.online.dialog.SettingDialog;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
+import java.util.Arrays;
+import java.util.TreeSet;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
@@ -13,6 +16,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.NbPreferences;
 
 /**
  * Top component which displays something.
@@ -40,7 +44,7 @@ import org.openide.util.NbBundle.Messages;
 })
 public final class SharePointTopComponent extends TopComponent {
 
-	SharePointTreeNode rootNode = new SharePointTreeNode("Disconnect", "disconnect", "cross");
+	SharePointTreeNode rootNode = new SharePointTreeNode("Server", "servers", "server", null);
 	SharePointTreeModel treeModel = new SharePointTreeModel(rootNode);
 
 	public SharePointTopComponent() {
@@ -93,6 +97,7 @@ public final class SharePointTopComponent extends TopComponent {
 
         setLayout(new java.awt.BorderLayout());
 
+        tree.setRowHeight(24);
         tree.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 treeMouseClicked(evt);
@@ -114,31 +119,58 @@ public final class SharePointTopComponent extends TopComponent {
 		settingDialog.setLocationRelativeTo(null);
 		settingDialog.setVisible(true);
 		if (settingDialog.isSave) {
-			Keyring.save("sharepointDomain", settingDialog.domainTextField.getText().toCharArray(), null);
-			Keyring.save("sharepointUsername", settingDialog.usernameTextField.getText().toCharArray(), null);
-			Keyring.save("sharepointPassword", settingDialog.passwordField.getText().toCharArray(), null);
+			String savedServers = NbPreferences.forModule(SharePointTopComponent.class).get("servers", "");
+			TreeSet<String> set = new TreeSet<>(Arrays.asList(savedServers.split(",")));
+			String serverName = settingDialog.domainTextField.getText();
+			if (set.contains(serverName)) {
+				JOptionPane.showMessageDialog(null, "Already added", "Errir", JOptionPane.ERROR_MESSAGE);
+			} else {
+				set.add(serverName);
+				set.remove("");
+				NbPreferences.forModule(SharePointTopComponent.class).put("servers", String.join(",", set));
+				Keyring.save(serverName + "-sharepointDomain", serverName.toCharArray(), null);
+				Keyring.save(serverName + "-sharepointUsername", settingDialog.usernameTextField.getText().toCharArray(), null);
+				Keyring.save(serverName + "-sharepointPassword", settingDialog.passwordField.getText().toCharArray(), null);
+				refreshTree();
+			}
 		}
     }//GEN-LAST:event_addserverMenuItemActionPerformed
 
     private void editServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editServerMenuItemActionPerformed
 		SettingDialog settingDialog = new SettingDialog(null, true);
 		settingDialog.setLocationRelativeTo(null);
-		String domain = Keyring.read("sharepointDomain") == null ? null : new String(Keyring.read("sharepointDomain"));
-		String username = Keyring.read("sharepointUsername") == null ? null : new String(Keyring.read("sharepointUsername"));
-		String password = Keyring.read("sharepointPassword") == null ? null : new String(Keyring.read("sharepointPassword"));
+
+		SharePointTreeNode node = (SharePointTreeNode) tree.getLastSelectedPathComponent();
+		if (node == null) {
+			return;
+		}
+		String domain = Keyring.read(node.text + "-sharepointDomain") == null ? null : new String(Keyring.read(node.text + "-sharepointDomain"));
+		String username = Keyring.read(node.text + "-sharepointUsername") == null ? null : new String(Keyring.read(node.text + "-sharepointUsername"));
+		String password = Keyring.read(node.text + "-sharepointPassword") == null ? null : new String(Keyring.read(node.text + "-sharepointPassword"));
 		settingDialog.domainTextField.setText(domain);
 		settingDialog.usernameTextField.setText(username);
 		settingDialog.passwordField.setText(password);
 		settingDialog.setVisible(true);
 		if (settingDialog.isSave) {
-			Keyring.save("sharepointDomain", settingDialog.domainTextField.getText().toCharArray(), null);
-			Keyring.save("sharepointUsername", settingDialog.usernameTextField.getText().toCharArray(), null);
-			Keyring.save("sharepointPassword", settingDialog.passwordField.getText().toCharArray(), null);
+			Keyring.save(node.text + "-sharepointDomain", settingDialog.domainTextField.getText().toCharArray(), null);
+			Keyring.save(node.text + "-sharepointUsername", settingDialog.usernameTextField.getText().toCharArray(), null);
+			Keyring.save(node.text + "-sharepointPassword", settingDialog.passwordField.getText().toCharArray(), null);
 		}
     }//GEN-LAST:event_editServerMenuItemActionPerformed
 
     private void deleteServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteServerMenuItemActionPerformed
-		// TODO add your handling code here:
+		SettingDialog settingDialog = new SettingDialog(null, true);
+		settingDialog.setLocationRelativeTo(null);
+
+		SharePointTreeNode node = (SharePointTreeNode) tree.getLastSelectedPathComponent();
+		if (node == null) {
+			return;
+		}
+		String savedServers = NbPreferences.forModule(SharePointTopComponent.class).get("servers", "");
+		TreeSet<String> set = new TreeSet<>(Arrays.asList(savedServers.split(",")));
+		set.remove(node.text);
+		NbPreferences.forModule(SharePointTopComponent.class).put("servers", String.join(",", set));
+		refreshTree();
     }//GEN-LAST:event_deleteServerMenuItemActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -171,26 +203,50 @@ public final class SharePointTopComponent extends TopComponent {
 			tree.setCellRenderer(new SharePointTreeRenderer());
 			tree.setShowsRootHandles(true);
 
-			rootNode.add(new SharePointTreeNode("SharePoint2", "root"));
-			rootNode.add(new SharePointTreeNode("SharePoint3", "root"));
-
-			String domain = Keyring.read("sharepointDomain") == null ? null : new String(Keyring.read("sharepointDomain"));
-			String username = Keyring.read("sharepointUsername") == null ? null : new String(Keyring.read("sharepointUsername"));
-			String password = Keyring.read("sharepointPassword") == null ? null : new String(Keyring.read("sharepointPassword"));
-
-			if (domain != null && username != null && password != null) {
-				Pair<String, String> token = SPOnline.login(username, password, domain);
-				if (token != null) {
-					String jsonString = SPOnline.post(token, domain, "/_api/contextinfo", null, null);
-					JSONObject json = new JSONObject(jsonString);
-					jsonString = SPOnline.get(token, domain, "/_api/web");
-					if (jsonString != null) {
-						System.out.println(CommonLib.prettyFormatJson(jsonString));
-					}
-				}
-			}
+			refreshTree();
 		} catch (Exception ex) {
 			ex.printStackTrace();
+		}
+	}
+
+	private void refreshTree() {
+		rootNode.removeAllChildren();
+		String savedServers = NbPreferences.forModule(SharePointTopComponent.class).get("servers", "");
+		TreeSet<String> set = new TreeSet<>(Arrays.asList(savedServers.split(",")));
+		set.remove("");
+		for (String server : set) {
+			String domain = Keyring.read(server + "-sharepointDomain") == null ? null : new String(Keyring.read(server + "-sharepointDomain"));
+			String username = Keyring.read(server + "-sharepointUsername") == null ? null : new String(Keyring.read(server + "-sharepointUsername"));
+			String password = Keyring.read(server + "-sharepointPassword") == null ? null : new String(Keyring.read(server + "-sharepointPassword"));
+			SharePointTreeNode serverNode = new SharePointTreeNode(server, "server", "server", new ServerInfo(domain, username, password));
+			rootNode.add(serverNode);
+			initServerNode(serverNode);
+		}
+		treeModel.reload();
+	}
+
+	private void initServerNode(SharePointTreeNode serverNode) {
+		SharePointTreeNode listsNode = new SharePointTreeNode("List", "lists", "table");
+		serverNode.add(listsNode);
+		initLists(listsNode);
+		serverNode.add(new SharePointTreeNode("Page", "oages", "page"));
+		serverNode.add(new SharePointTreeNode("Document library", "Document libraries", "book"));
+		serverNode.add(new SharePointTreeNode("App", "app", "brick"));
+		serverNode.add(new SharePointTreeNode("Subsite", "subsites", "world"));
+	}
+
+	private void initLists(SharePointTreeNode listsNode) {
+		Pair<String, String> token = SPOnline.login("guest1@quantr.hk", password, domain);
+		if (token != null) {
+			String jsonString = SPOnline.post(token, domain, "/_api/contextinfo", null, null);
+			System.out.println(CommonLib.prettyFormatJson(jsonString));
+			JSONObject json = new JSONObject(jsonString);
+			String formDigestValue = json.getJSONObject("d").getJSONObject("GetContextWebInformation").getString("FormDigestValue");
+			System.out.println("FormDigestValue=" + formDigestValue);
+			jsonString = SPOnline.get(token, domain, "/_api/web/lists");
+			if (jsonString != null) {
+				System.out.println(CommonLib.prettyFormatJson(jsonString));
+			}
 		}
 	}
 }
