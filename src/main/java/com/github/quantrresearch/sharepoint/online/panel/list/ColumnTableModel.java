@@ -1,7 +1,6 @@
 package com.github.quantrresearch.sharepoint.online.panel.list;
 
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -11,7 +10,7 @@ import javax.swing.table.DefaultTableModel;
 public class ColumnTableModel extends DefaultTableModel {
 
 	public String columnNames[] = {"Name", "Type"};
-	public ArrayList<List<Object>> data = new ArrayList<>();
+	public ArrayList<ArrayList<Object>> data = new ArrayList<>();
 
 	@Override
 	public String getColumnName(int column) {

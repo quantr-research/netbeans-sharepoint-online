@@ -1,5 +1,5 @@
 // License : Apache License Version 2.0  https://www.apache.org/licenses/LICENSE-2.0
-package com.github.quantrresearch.sharepoint.online;
+package com.github.quantrresearch.sharepoint.online.datastructure;
 
 /**
  *
@@ -7,9 +7,9 @@ package com.github.quantrresearch.sharepoint.online;
  */
 public class ServerInfo {
 
-	String domain;
-	String username;
-	String password;
+	public String domain;
+	public String username;
+	public String password;
 
 	public ServerInfo(String domain, String username, String password) {
 		this.domain = domain;

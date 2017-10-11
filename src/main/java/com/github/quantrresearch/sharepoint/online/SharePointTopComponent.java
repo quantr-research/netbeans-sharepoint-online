@@ -1,13 +1,14 @@
 // License : Apache License Version 2.0  https://www.apache.org/licenses/LICENSE-2.0
 package com.github.quantrresearch.sharepoint.online;
 
+import com.github.quantrresearch.sharepoint.online.datastructure.ListInfo;
+import com.github.quantrresearch.sharepoint.online.datastructure.ServerInfo;
 import com.github.quantrresearch.sharepoint.online.dialog.SettingDialog;
 import com.github.quantrresearch.sharepoint.online.panel.list.ListPanel;
 import com.github.quantrresearch.sharepoint.online.panel.MainTopComponent;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
 import java.awt.BorderLayout;
-import java.awt.Image;
 import java.util.Arrays;
 import java.util.TreeSet;
 import javax.swing.JOptionPane;
@@ -150,10 +151,11 @@ public final class SharePointTopComponent extends TopComponent {
 			if (node == null) {
 				return;
 			} else if (node.type.equals("list")) {
+				ServerInfo serverInfo = (ServerInfo) Helper.get(node, ServerInfo.class);
 				MainTopComponent mainTopComponent = new MainTopComponent();
 				mainTopComponent.setName(node.text);
 				mainTopComponent.setIcon(CommonLib.iconToImage(SharePointTreeNode.iconRoot.get(node.icon)));
-				mainTopComponent.add(new ListPanel(), BorderLayout.CENTER);
+				mainTopComponent.add(new ListPanel(serverInfo, (ListInfo) node.object), BorderLayout.CENTER);
 				mainTopComponent.open();
 			}
 		}
@@ -304,7 +306,10 @@ public final class SharePointTopComponent extends TopComponent {
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
 					JSONObject j = array.getJSONObject(x);
-					listsNode.add(new SharePointTreeNode(j.getString("Title"), "list", "table", null));
+					ListInfo listInfo = new ListInfo();
+					listInfo.id = j.getString("Id");
+					SharePointTreeNode listNode = new SharePointTreeNode(j.getString("Title"), "list", "table", listInfo);
+					listsNode.add(listNode);
 				}
 			}
 		}

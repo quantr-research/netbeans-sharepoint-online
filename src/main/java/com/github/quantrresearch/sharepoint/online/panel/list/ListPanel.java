@@ -1,6 +1,15 @@
 // License : Apache License Version 2.0  https://www.apache.org/licenses/LICENSE-2.0
 package com.github.quantrresearch.sharepoint.online.panel.list;
 
+import com.github.quantrresearch.sharepoint.online.ModuleLib;
+import com.github.quantrresearch.sharepoint.online.datastructure.ListInfo;
+import com.github.quantrresearch.sharepoint.online.datastructure.ServerInfo;
+import hk.quantr.sharepoint.SPOnline;
+import java.util.ArrayList;
+import org.apache.commons.lang3.tuple.Pair;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  *
  * @author Peter <mcheung63@hotmail.com>
@@ -9,16 +18,22 @@ public class ListPanel extends javax.swing.JPanel {
 
 	public DataTableModel dataTableModel = new DataTableModel();
 	public ColumnTableModel columnTableModel = new ColumnTableModel();
+	ServerInfo serverInfo;
+	ListInfo listInfo;
 
 	/**
 	 * Creates new form ListPanel
 	 */
-	public ListPanel() {
+	public ListPanel(ServerInfo serverInfo, ListInfo listInfo) {
+		super();
+		this.serverInfo = serverInfo;
+		this.listInfo = listInfo;
 		initComponents();
 		dataTable.setModel(dataTableModel);
 		dataTable.setDefaultRenderer(Object.class, new DataTableCellRenderer());
 		columnTable.setModel(columnTableModel);
 		columnTable.setDefaultRenderer(Object.class, new ColumnTableCellRenderer());
+		initData();
 	}
 
 	/**
@@ -55,6 +70,7 @@ public class ListPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        dataTable.setGridColor(new java.awt.Color(220, 220, 220));
         jScrollPane1.setViewportView(dataTable);
 
         jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -74,6 +90,7 @@ public class ListPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        columnTable.setGridColor(new java.awt.Color(220, 220, 220));
         jScrollPane2.setViewportView(columnTable);
 
         jPanel3.add(jScrollPane2, java.awt.BorderLayout.CENTER);
@@ -108,4 +125,26 @@ public class ListPanel extends javax.swing.JPanel {
     private javax.swing.JTabbedPane jTabbedPane1;
     private com.github.quantrresearch.sharepoint.online.panel.list.DataTableCellRenderer listTableCellRenderer1;
     // End of variables declaration//GEN-END:variables
+
+	private void initData() {
+		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
+		if (token != null) {
+			String jsonString = SPOnline.post(token, serverInfo.domain, "/_api/contextinfo", null, null);
+			// get all list by specific ID
+			jsonString = SPOnline.get(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
+			if (jsonString != null) {
+				JSONObject json = new JSONObject(jsonString);
+				JSONArray array = json.getJSONObject("d").getJSONArray("results");
+				for (int x = 0; x < array.length(); x++) {
+					JSONObject j = array.getJSONObject(x);
+					ArrayList<Object> row = new ArrayList();
+					row.add(j.getString("Title"));
+					ModuleLib.log(j.getString("Title"));
+					row.add(j.getString("TypeDisplayName"));
+					columnTableModel.data.add(row);
+				}
+				columnTableModel.fireTableDataChanged();
+			}
+		}
+	}
 }

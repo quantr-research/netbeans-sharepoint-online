@@ -28,13 +28,13 @@ public class DataTableCellRenderer extends JLabel implements TableCellRenderer {
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		if (column == 0) {
-			setHorizontalAlignment(SwingConstants.RIGHT);
-		} else if (column == 1) {
+//		if (column == 0) {
+//			setHorizontalAlignment(SwingConstants.RIGHT);
+//		} else if (column == 1) {
+//			setHorizontalAlignment(SwingConstants.LEFT);
+//		} else {
 			setHorizontalAlignment(SwingConstants.LEFT);
-		} else {
-			setHorizontalAlignment(SwingConstants.CENTER);
-		}
+//		}
 		if (value instanceof String) {
 			setText((String) value);
 		} else if (value != null) {
