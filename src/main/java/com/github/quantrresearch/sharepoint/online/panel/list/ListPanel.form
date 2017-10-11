@@ -69,6 +69,7 @@
                     <Property name="gridColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="dc" green="dc" red="dc" type="rgb"/>
                     </Property>
+                    <Property name="rowHeight" type="int" value="22"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -110,6 +111,7 @@
                     <Property name="gridColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="dc" green="dc" red="dc" type="rgb"/>
                     </Property>
+                    <Property name="rowHeight" type="int" value="22"/>
                   </Properties>
                 </Component>
               </SubComponents>

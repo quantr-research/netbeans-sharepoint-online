@@ -71,6 +71,7 @@ public class ListPanel extends javax.swing.JPanel {
             }
         ));
         dataTable.setGridColor(new java.awt.Color(220, 220, 220));
+        dataTable.setRowHeight(22);
         jScrollPane1.setViewportView(dataTable);
 
         jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -91,6 +92,7 @@ public class ListPanel extends javax.swing.JPanel {
             }
         ));
         columnTable.setGridColor(new java.awt.Color(220, 220, 220));
+        columnTable.setRowHeight(22);
         jScrollPane2.setViewportView(columnTable);
 
         jPanel3.add(jScrollPane2, java.awt.BorderLayout.CENTER);
