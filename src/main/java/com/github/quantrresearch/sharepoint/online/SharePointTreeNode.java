@@ -16,7 +16,7 @@ public class SharePointTreeNode extends DefaultMutableTreeNode {
 	String text;
 	String icon;
 	public boolean visible;
-	static HashMap<String, Icon> iconRoot;
+	public static HashMap<String, Icon> iconRoot;
 	Object object;
 
 	static {
@@ -63,7 +63,6 @@ public class SharePointTreeNode extends DefaultMutableTreeNode {
 
 	public Icon getIcon() {
 		Icon temp = iconRoot.get(icon);
-		System.out.println(icon + " = " + temp);
 		return temp;
 	}
 

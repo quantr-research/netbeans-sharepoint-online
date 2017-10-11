@@ -2,8 +2,12 @@
 package com.github.quantrresearch.sharepoint.online;
 
 import com.github.quantrresearch.sharepoint.online.dialog.SettingDialog;
+import com.github.quantrresearch.sharepoint.online.panel.list.ListPanel;
+import com.github.quantrresearch.sharepoint.online.panel.MainTopComponent;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
+import java.awt.BorderLayout;
+import java.awt.Image;
 import java.util.Arrays;
 import java.util.TreeSet;
 import javax.swing.JOptionPane;
@@ -68,6 +72,9 @@ public final class SharePointTopComponent extends TopComponent {
         deleteServerMenuItem = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
         tree = new javax.swing.JTree();
+        jToolBar1 = new javax.swing.JToolBar();
+        expandTreeButton = new javax.swing.JButton();
+        collapseButton = new javax.swing.JButton();
 
         addserverMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/github/quantrresearch/sharepoint/online/icon/add.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(addserverMenuItem, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.addserverMenuItem.text")); // NOI18N
@@ -107,11 +114,48 @@ public final class SharePointTopComponent extends TopComponent {
         jScrollPane1.setViewportView(tree);
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jToolBar1.setRollover(true);
+
+        org.openide.awt.Mnemonics.setLocalizedText(expandTreeButton, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.expandTreeButton.text")); // NOI18N
+        expandTreeButton.setFocusable(false);
+        expandTreeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        expandTreeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        expandTreeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                expandTreeButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(expandTreeButton);
+
+        org.openide.awt.Mnemonics.setLocalizedText(collapseButton, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.collapseButton.text")); // NOI18N
+        collapseButton.setFocusable(false);
+        collapseButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        collapseButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        collapseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                collapseButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(collapseButton);
+
+        add(jToolBar1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
     private void treeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_treeMouseClicked
 		if (SwingUtilities.isRightMouseButton(evt)) {
 			settingPopupMenu.show(tree, evt.getX(), evt.getY());
+		} else if (evt.getClickCount() == 2) {
+			SharePointTreeNode node = (SharePointTreeNode) tree.getLastSelectedPathComponent();
+			if (node == null) {
+				return;
+			} else if (node.type.equals("list")) {
+				MainTopComponent mainTopComponent = new MainTopComponent();
+				mainTopComponent.setName(node.text);
+				mainTopComponent.setIcon(CommonLib.iconToImage(SharePointTreeNode.iconRoot.get(node.icon)));
+				mainTopComponent.add(new ListPanel(), BorderLayout.CENTER);
+				mainTopComponent.open();
+			}
 		}
     }//GEN-LAST:event_treeMouseClicked
 
@@ -174,11 +218,22 @@ public final class SharePointTopComponent extends TopComponent {
 		refreshTree();
     }//GEN-LAST:event_deleteServerMenuItemActionPerformed
 
+    private void expandTreeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandTreeButtonActionPerformed
+		CommonLib.expandAll(tree, true);
+    }//GEN-LAST:event_expandTreeButtonActionPerformed
+
+    private void collapseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_collapseButtonActionPerformed
+		CommonLib.expandAll(tree, false);
+    }//GEN-LAST:event_collapseButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem addserverMenuItem;
+    private javax.swing.JButton collapseButton;
     private javax.swing.JMenuItem deleteServerMenuItem;
     private javax.swing.JMenuItem editServerMenuItem;
+    private javax.swing.JButton expandTreeButton;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPopupMenu settingPopupMenu;
     private javax.swing.JTree tree;
     // End of variables declaration//GEN-END:variables
