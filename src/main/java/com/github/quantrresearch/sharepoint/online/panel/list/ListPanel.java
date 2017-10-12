@@ -1,9 +1,9 @@
 // License : Apache License Version 2.0  https://www.apache.org/licenses/LICENSE-2.0
 package com.github.quantrresearch.sharepoint.online.panel.list;
 
-import com.github.quantrresearch.sharepoint.online.ModuleLib;
 import com.github.quantrresearch.sharepoint.online.datastructure.ListInfo;
 import com.github.quantrresearch.sharepoint.online.datastructure.ServerInfo;
+import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
 import java.util.ArrayList;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,8 +31,10 @@ public class ListPanel extends javax.swing.JPanel {
 		initComponents();
 		dataTable.setModel(dataTableModel);
 		dataTable.setDefaultRenderer(Object.class, new DataTableCellRenderer());
+		dataTable.getTableHeader().setReorderingAllowed(false);
 		columnTable.setModel(columnTableModel);
 		columnTable.setDefaultRenderer(Object.class, new ColumnTableCellRenderer());
+		columnTable.getTableHeader().setReorderingAllowed(false);
 		initData();
 	}
 
@@ -131,25 +133,75 @@ public class ListPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
 	private void initData() {
+		initColumnTable();
+		initDataTable();
+	}
+
+	private void initColumnTable() {
 		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
 		if (token != null) {
 			String jsonString = SPOnline.post(token, serverInfo.domain, "/_api/contextinfo", null, null);
 			// get all list by specific ID
 			jsonString = SPOnline.get(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
 			if (jsonString != null) {
-				System.out.println(">" + jsonString);
+//				System.out.println(">" + CommonLib.formatJson(jsonString));
+//				System.out.println("-----------------------------------------------------------");
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
 					JSONObject j = array.getJSONObject(x);
-//					ArrayList<Object> row = new ArrayList();
-//					for (String columnName : columnTableModel.columnFieldNames) {
-//						row.add(j.getString(columnName));
-//					}
-//					columnTableModel.data.add(row);
+//					System.out.println(">" + CommonLib.formatJson(j.toString()));
+					ArrayList<Object> row = new ArrayList();
+					for (int z = 0; z < columnTableModel.columnFieldNames.length; z++) {
+						String columnName = columnTableModel.columnFieldNames[z];
+						Class columnType = columnTableModel.columnFieldtypes[z];
+						try {
+							if (columnType == String.class) {
+								row.add(j.getString(columnName));
+							} else if (columnType == Boolean.class) {
+								row.add(j.getBoolean(columnName));
+							} else if (columnType == Integer.class) {
+								row.add(j.getInt(columnName));
+							} else {
+								row.add(null);
+							}
+						} catch (Exception ex) {
+							row.add(null);
+						}
+					}
+					columnTableModel.data.add(row);
 				}
 				columnTableModel.fireTableDataChanged();
 			}
+			CommonLib.autoResizeColumn(columnTable);
+		}
+	}
+
+	private void initDataTable() {
+		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
+		if (token != null) {
+			ArrayList<String> columnNames = new ArrayList<>();
+			String jsonString = SPOnline.post(token, serverInfo.domain, "/_api/contextinfo", null, null);
+			jsonString = SPOnline.get(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
+			if (jsonString != null) {
+				JSONObject json = new JSONObject(jsonString);
+				JSONArray array = json.getJSONObject("d").getJSONArray("results");
+				for (int x = 0; x < array.length(); x++) {
+					JSONObject j = array.getJSONObject(x);
+					columnNames.add(j.getString("Title"));
+				}
+			}
+			jsonString = SPOnline.get(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/items");
+			if (jsonString != null) {
+				System.out.println("jsonString=" + CommonLib.formatJson(jsonString));
+				JSONObject json = new JSONObject(jsonString);
+				JSONArray array = json.getJSONObject("d").getJSONArray("results");
+				for (int x = 0; x < array.length(); x++) {
+					JSONObject j = array.getJSONObject(x);
+//					columnNames.add(j.getString("Title"));
+				}
+			}
+			CommonLib.autoResizeColumn(columnTable);
 		}
 	}
 }

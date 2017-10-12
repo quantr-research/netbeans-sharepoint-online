@@ -33,7 +33,7 @@ public class ColumnTableCellRenderer extends JLabel implements TableCellRenderer
 //		} else if (column == 1) {
 //			setHorizontalAlignment(SwingConstants.LEFT);
 //		} else {
-			setHorizontalAlignment(SwingConstants.LEFT);
+		setHorizontalAlignment(SwingConstants.LEFT);
 //		}
 		if (value instanceof String) {
 			setText((String) value);
@@ -46,11 +46,7 @@ public class ColumnTableCellRenderer extends JLabel implements TableCellRenderer
 			setBackground(selectionBackground);
 			setForeground(selectionForeground);
 		} else {
-			if (column >= 2 && getText() != null) {
-				setForeground(CommonLib.getRandomColor(getText()));
-			} else {
-				setForeground(foreground);
-			}
+			setForeground(foreground);
 			setBackground(background);
 		}
 		return this;
