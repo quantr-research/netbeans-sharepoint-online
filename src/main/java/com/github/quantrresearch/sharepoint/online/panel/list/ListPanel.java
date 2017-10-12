@@ -70,6 +70,7 @@ public class ListPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        dataTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         dataTable.setGridColor(new java.awt.Color(220, 220, 220));
         dataTable.setRowHeight(22);
         jScrollPane1.setViewportView(dataTable);
@@ -91,6 +92,7 @@ public class ListPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        columnTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         columnTable.setGridColor(new java.awt.Color(220, 220, 220));
         columnTable.setRowHeight(22);
         jScrollPane2.setViewportView(columnTable);
@@ -135,15 +137,16 @@ public class ListPanel extends javax.swing.JPanel {
 			// get all list by specific ID
 			jsonString = SPOnline.get(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
 			if (jsonString != null) {
+				System.out.println(">" + jsonString);
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
 					JSONObject j = array.getJSONObject(x);
-					ArrayList<Object> row = new ArrayList();
-					row.add(j.getString("Title"));
-					ModuleLib.log(j.getString("Title"));
-					row.add(j.getString("TypeDisplayName"));
-					columnTableModel.data.add(row);
+//					ArrayList<Object> row = new ArrayList();
+//					for (String columnName : columnTableModel.columnFieldNames) {
+//						row.add(j.getString(columnName));
+//					}
+//					columnTableModel.data.add(row);
 				}
 				columnTableModel.fireTableDataChanged();
 			}

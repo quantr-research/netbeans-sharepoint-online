@@ -9,7 +9,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ColumnTableModel extends DefaultTableModel {
 
-	public String columnNames[] = {"Name", "Type"};
+	public String columnNames[] = {"Name", "Type", "Created", "Created By", "Modified", "Modified By"};
+	public String columnFieldNames[] = {"Title", "TypeDisplayName", "Created", "Created By", "Modified", "Modified By"};
 	public ArrayList<ArrayList<Object>> data = new ArrayList<>();
 
 	@Override
