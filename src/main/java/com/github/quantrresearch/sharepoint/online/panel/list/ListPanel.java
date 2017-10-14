@@ -283,13 +283,12 @@ public class ListPanel extends javax.swing.JPanel {
 			}
 			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/items");
 			if (jsonString != null) {
-				//System.out.println(CommonLib.formatJson(jsonString));
+				System.out.println(CommonLib.formatJson(jsonString));
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
 					ArrayList<Object> row = new ArrayList<>();
 					JSONObject j = array.getJSONObject(x);
-					//System.out.println("j=" + j);
 					for (Field field : dataTableModel.columns) {
 						try {
 							if (field.type.equals("Computed")) {
@@ -300,6 +299,7 @@ public class ListPanel extends javax.swing.JPanel {
 								row.add(j.getString(field.internalName));
 							}
 						} catch (Exception ex) {
+							ex.printStackTrace();
 							row.add("ERROR");
 						}
 					}
