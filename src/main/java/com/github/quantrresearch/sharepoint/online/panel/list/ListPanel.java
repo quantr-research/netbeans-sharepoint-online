@@ -1,11 +1,14 @@
 // License : Apache License Version 2.0  https://www.apache.org/licenses/LICENSE-2.0
 package com.github.quantrresearch.sharepoint.online.panel.list;
 
+import com.github.quantrresearch.sharepoint.online.Helper;
+import com.github.quantrresearch.sharepoint.online.datastructure.Field;
 import com.github.quantrresearch.sharepoint.online.datastructure.ListInfo;
 import com.github.quantrresearch.sharepoint.online.datastructure.ServerInfo;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,8 +21,10 @@ public class ListPanel extends javax.swing.JPanel {
 
 	public DataTableModel dataTableModel = new DataTableModel();
 	public ColumnTableModel columnTableModel = new ColumnTableModel();
+	public ViewTableModel viewTableModel = new ViewTableModel();
 	ServerInfo serverInfo;
 	ListInfo listInfo;
+	HashMap<String, Field> fields = new HashMap<>();
 
 	/**
 	 * Creates new form ListPanel
@@ -32,9 +37,14 @@ public class ListPanel extends javax.swing.JPanel {
 		dataTable.setModel(dataTableModel);
 		dataTable.setDefaultRenderer(Object.class, new DataTableCellRenderer());
 		dataTable.getTableHeader().setReorderingAllowed(false);
+
 		columnTable.setModel(columnTableModel);
 		columnTable.setDefaultRenderer(Object.class, new ColumnTableCellRenderer());
 		columnTable.getTableHeader().setReorderingAllowed(false);
+
+		viewTable.setModel(viewTableModel);
+		viewTable.setDefaultRenderer(Object.class, new ViewTableCellRenderer());
+		viewTable.getTableHeader().setReorderingAllowed(false);
 		initData();
 	}
 
@@ -50,10 +60,19 @@ public class ListPanel extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         dataTable = new javax.swing.JTable();
+        jToolBar2 = new javax.swing.JToolBar();
+        jLabel2 = new javax.swing.JLabel();
+        viewDataComboBox = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         columnTable = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jToolBar1 = new javax.swing.JToolBar();
+        jLabel1 = new javax.swing.JLabel();
+        viewComboBox = new javax.swing.JComboBox<>();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        viewTable = new javax.swing.JTable();
 
         org.openide.awt.Mnemonics.setLocalizedText(listTableCellRenderer1, org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.listTableCellRenderer1.text")); // NOI18N
 
@@ -78,6 +97,21 @@ public class ListPanel extends javax.swing.JPanel {
         jScrollPane1.setViewportView(dataTable);
 
         jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jToolBar2.setRollover(true);
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jLabel2.text")); // NOI18N
+        jToolBar2.add(jLabel2);
+
+        viewDataComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        viewDataComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewDataComboBoxActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(viewDataComboBox);
+
+        jPanel1.add(jToolBar2, java.awt.BorderLayout.PAGE_START);
 
         jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
 
@@ -116,41 +150,93 @@ public class ListPanel extends javax.swing.JPanel {
 
         jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jPanel2.TabConstraints.tabTitle"), jPanel2); // NOI18N
 
+        jPanel4.setLayout(new java.awt.BorderLayout());
+
+        jToolBar1.setRollover(true);
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jLabel1.text")); // NOI18N
+        jToolBar1.add(jLabel1);
+
+        viewComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        viewComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewComboBoxActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(viewComboBox);
+
+        jPanel4.add(jToolBar1, java.awt.BorderLayout.PAGE_START);
+
+        viewTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        viewTable.setRowHeight(22);
+        jScrollPane3.setViewportView(viewTable);
+
+        jPanel4.add(jScrollPane3, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jPanel4.TabConstraints.tabTitle"), jPanel4); // NOI18N
+
         add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void viewComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewComboBoxActionPerformed
+		initViewTable();
+    }//GEN-LAST:event_viewComboBoxActionPerformed
+
+    private void viewDataComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewDataComboBoxActionPerformed
+		initDataTable();
+    }//GEN-LAST:event_viewDataComboBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable columnTable;
     private javax.swing.JTable dataTable;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JToolBar jToolBar2;
     private com.github.quantrresearch.sharepoint.online.panel.list.DataTableCellRenderer listTableCellRenderer1;
+    private javax.swing.JComboBox<String> viewComboBox;
+    private javax.swing.JComboBox<String> viewDataComboBox;
+    private javax.swing.JTable viewTable;
     // End of variables declaration//GEN-END:variables
 
 	private void initData() {
+		initFields();
+		initViewCombo();
 		initColumnTable();
 		initDataTable();
+		initViewTable();
 	}
 
 	private void initColumnTable() {
 		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
 		if (token != null) {
-			String jsonString = SPOnline.post(token, serverInfo.domain, "/_api/contextinfo", null, null);
-			// get all list by specific ID
-			jsonString = SPOnline.get(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
+			String jsonString = SPOnline.post(token, serverInfo.domain, serverInfo.path + "/_api/contextinfo", null, null);
+			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
 			if (jsonString != null) {
-//				System.out.println(">" + CommonLib.formatJson(jsonString));
-//				System.out.println("-----------------------------------------------------------");
+				//System.out.println(CommonLib.formatJson(jsonString));
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
 					JSONObject j = array.getJSONObject(x);
-//					System.out.println(">" + CommonLib.formatJson(j.toString()));
 					ArrayList<Object> row = new ArrayList();
 					for (int z = 0; z < columnTableModel.columnFieldNames.length; z++) {
 						String columnName = columnTableModel.columnFieldNames[z];
@@ -180,28 +266,109 @@ public class ListPanel extends javax.swing.JPanel {
 	private void initDataTable() {
 		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
 		if (token != null) {
-			ArrayList<String> columnNames = new ArrayList<>();
+			String viewTitle = (String) viewDataComboBox.getSelectedItem();
+			if (viewTitle == null) {
+				return;
+			}
+			dataTableModel.columns.clear();
+			dataTableModel.data.clear();
 			String jsonString = SPOnline.post(token, serverInfo.domain, "/_api/contextinfo", null, null);
-			jsonString = SPOnline.get(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
+			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/Views/GetByTitle('" + Helper.escapeSharePointUrl(viewTitle) + "')/ViewFields");
 			if (jsonString != null) {
+				JSONObject json = new JSONObject(jsonString);
+				JSONArray array = json.getJSONObject("d").getJSONObject("Items").getJSONArray("results");
+				for (int x = 0; x < array.length(); x++) {
+					dataTableModel.columns.add(fields.get(array.getString(x)));
+				}
+			}
+			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/items");
+			if (jsonString != null) {
+				//System.out.println(CommonLib.formatJson(jsonString));
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
+					ArrayList<Object> row = new ArrayList<>();
 					JSONObject j = array.getJSONObject(x);
-					columnNames.add(j.getString("Title"));
+					//System.out.println("j=" + j);
+					for (Field field : dataTableModel.columns) {
+						try {
+							if (field.type.equals("Computed")) {
+								row.add(j.getString(field.title));
+							} else if (field.type.equals("Number")) {
+								row.add(j.getInt(field.internalName));
+							} else {
+								row.add(j.getString(field.internalName));
+							}
+						} catch (Exception ex) {
+							row.add("ERROR");
+						}
+					}
+					//System.out.println("r=" + row.size());
+					dataTableModel.data.add(row);
 				}
+				dataTableModel.fireTableStructureChanged();
 			}
-			jsonString = SPOnline.get(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/items");
-			if (jsonString != null) {
-				System.out.println("jsonString=" + CommonLib.formatJson(jsonString));
-				JSONObject json = new JSONObject(jsonString);
-				JSONArray array = json.getJSONObject("d").getJSONArray("results");
-				for (int x = 0; x < array.length(); x++) {
-					JSONObject j = array.getJSONObject(x);
-//					columnNames.add(j.getString("Title"));
-				}
-			}
-			CommonLib.autoResizeColumn(columnTable);
+			CommonLib.autoResizeColumn(dataTable);
 		}
 	}
+
+	void initViewCombo() {
+		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
+		if (token != null) {
+			ArrayList<String> columnNames = new ArrayList<>();
+			String jsonString = SPOnline.post(token, serverInfo.domain, "/_api/contextinfo", null, null);
+			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/Views?$select=ID,Title");
+			if (jsonString != null) {
+				JSONObject json = new JSONObject(jsonString);
+				JSONArray array = json.getJSONObject("d").getJSONArray("results");
+				viewComboBox.removeAllItems();
+				viewDataComboBox.removeAllItems();
+				for (int x = 0; x < array.length(); x++) {
+					JSONObject j = array.getJSONObject(x);
+					viewComboBox.addItem(j.getString("Title"));
+					viewDataComboBox.addItem(j.getString("Title"));
+				}
+			}
+		}
+	}
+
+	void initViewTable() {
+		String viewTitle = (String) viewComboBox.getSelectedItem();
+		if (viewTitle == null) {
+			return;
+		}
+		Pair< String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
+		if (token != null) {
+			ArrayList<String> columnNames = new ArrayList<>();
+			String jsonString = SPOnline.post(token, serverInfo.domain, "/_api/contextinfo", null, null);
+			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/Views/GetByTitle('" + Helper.escapeSharePointUrl(viewTitle) + "')/ViewFields");
+			if (jsonString != null) {
+				JSONObject json = new JSONObject(jsonString);
+				JSONArray array = json.getJSONObject("d").getJSONObject("Items").getJSONArray("results");
+				viewTableModel.data.clear();
+				for (int x = 0; x < array.length(); x++) {
+					viewTableModel.data.add(array.getString(x));
+				}
+				viewTableModel.fireTableDataChanged();
+			}
+		}
+	}
+
+	private void initFields() {
+		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
+		if (token != null) {
+			String jsonString = SPOnline.post(token, serverInfo.domain, serverInfo.path + "/_api/contextinfo", null, null);
+			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
+			if (jsonString != null) {
+				fields.clear();
+				JSONObject json = new JSONObject(jsonString);
+				JSONArray array = json.getJSONObject("d").getJSONArray("results");
+				for (int x = 0; x < array.length(); x++) {
+					JSONObject j = array.getJSONObject(x);
+					fields.put(j.getString("EntityPropertyName"), new Field(j.getString("Title"), j.getString("TypeDisplayName"), j.getString("InternalName"), j.getString("StaticName")));
+				}
+			}
+		}
+	}
+
 }

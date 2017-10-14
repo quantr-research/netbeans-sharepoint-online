@@ -10,11 +10,13 @@ public class ServerInfo {
 	public String domain;
 	public String username;
 	public String password;
+	public String path;
 
-	public ServerInfo(String domain, String username, String password) {
+	public ServerInfo(String domain, String username, String password, String path) {
 		this.domain = domain;
 		this.username = username;
 		this.password = password;
+		this.path = path;
 	}
 
 }

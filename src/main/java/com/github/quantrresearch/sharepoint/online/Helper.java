@@ -30,4 +30,8 @@ public class Helper {
 			}
 		}
 	}
+
+	public static String escapeSharePointUrl(String path) {
+		return path.replaceAll(" ", "%20");
+	}
 }

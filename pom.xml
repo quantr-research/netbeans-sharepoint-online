@@ -186,17 +186,17 @@
 			<artifactId>peter-swing</artifactId>
 			<version>20170929</version>
 		</dependency>
-	 <dependency>
-	  <groupId>org.netbeans.api</groupId>
-	  <artifactId>org-netbeans-modules-keyring</artifactId>
-	  <version>RELEASE82</version>
-	  <type>jar</type>
-	 </dependency>
-	 <dependency>
-	  <groupId>org.reflections</groupId>
-	  <artifactId>reflections</artifactId>
-	  <version>0.9.10</version>
-	  <type>jar</type>
-	 </dependency>
+		<dependency>
+			<groupId>org.netbeans.api</groupId>
+			<artifactId>org-netbeans-modules-keyring</artifactId>
+			<version>RELEASE82</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.10</version>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 </project>

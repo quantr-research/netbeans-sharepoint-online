@@ -1,6 +1,5 @@
 package com.github.quantrresearch.sharepoint.online.panel.list;
 
-import com.github.quantrresearch.sharepoint.online.datastructure.Field;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
@@ -8,26 +7,26 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Peter <peter@quantr.hk>
  */
-public class DataTableModel extends DefaultTableModel {
+public class ViewTableModel extends DefaultTableModel {
 
-	public ArrayList<Field> columns = new ArrayList<>();
-	public ArrayList<ArrayList<Object>> data = new ArrayList<>();
+	public String columnNames[] = {"Field"};
+	public ArrayList<String> data = new ArrayList<>();
 
 	@Override
 	public String getColumnName(int column) {
-		if (columns == null) {
+		if (columnNames == null) {
 			return null;
 		} else {
-			return columns.get(column).title;
+			return columnNames[column];
 		}
 	}
 
 	@Override
 	public int getColumnCount() {
-		if (columns == null) {
+		if (columnNames == null) {
 			return 0;
 		} else {
-			return columns.size();
+			return columnNames.length;
 		}
 	}
 
@@ -45,13 +44,13 @@ public class DataTableModel extends DefaultTableModel {
 		if (data == null) {
 			return null;
 		} else {
-			return data.get(row).get(column);
+			return data.get(row);
 		}
 	}
 
 	@Override
 	public boolean isCellEditable(int row, int column) {
-		return true;
+		return false;
 	}
 
 	@Override
