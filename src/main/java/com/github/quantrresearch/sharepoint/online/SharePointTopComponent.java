@@ -158,10 +158,7 @@ public final class SharePointTopComponent extends TopComponent {
 				mainTopComponent.setIcon(CommonLib.iconToImage(SharePointTreeNode.iconRoot.get(node.icon)));
 				mainTopComponent.add(new ListPanel(serverInfo, (ListInfo) node.object), BorderLayout.CENTER);
 				mainTopComponent.open();
-//				mainTopComponent.requestFocus();
-//				mainTopComponent.requestFocusInWindow();
 				mainTopComponent.requestActive();
-//				mainTopComponent.requestVisible();
 			}
 		}
     }//GEN-LAST:event_treeMouseClicked
