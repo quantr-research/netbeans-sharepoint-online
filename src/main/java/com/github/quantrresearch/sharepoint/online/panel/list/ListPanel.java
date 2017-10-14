@@ -7,6 +7,7 @@ import com.github.quantrresearch.sharepoint.online.datastructure.ListInfo;
 import com.github.quantrresearch.sharepoint.online.datastructure.ServerInfo;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -76,8 +77,13 @@ public class ListPanel extends javax.swing.JPanel {
         columnTable = new javax.swing.JTable();
         jToolBar3 = new javax.swing.JToolBar();
         exportColumnExcelButton = new javax.swing.JButton();
-        exportColumnExcelButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        jTabbedPane2 = new javax.swing.JTabbedPane();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
+        chooseImportColumnsExcelButton = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         jLabel1 = new javax.swing.JLabel();
@@ -159,26 +165,47 @@ public class ListPanel extends javax.swing.JPanel {
         });
         jToolBar3.add(exportColumnExcelButton);
 
-        exportColumnExcelButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/github/quantrresearch/sharepoint/online/fileicon/excel.png"))); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(exportColumnExcelButton1, org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.exportColumnExcelButton1.text")); // NOI18N
-        exportColumnExcelButton1.setFocusable(false);
-        exportColumnExcelButton1.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        jToolBar3.add(exportColumnExcelButton1);
-
         jPanel3.add(jToolBar3, java.awt.BorderLayout.PAGE_START);
 
         jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jPanel3.TabConstraints.tabTitle"), jPanel3); // NOI18N
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1503, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1724, Short.MAX_VALUE)
-        );
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        jTabbedPane2.setTabPlacement(javax.swing.JTabbedPane.LEFT);
+
+        jPanel5.setLayout(new java.awt.BorderLayout());
+
+        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        org.openide.awt.Mnemonics.setLocalizedText(chooseImportColumnsExcelButton, org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.chooseImportColumnsExcelButton.text")); // NOI18N
+        chooseImportColumnsExcelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chooseImportColumnsExcelButtonActionPerformed(evt);
+            }
+        });
+        jPanel6.add(chooseImportColumnsExcelButton);
+
+        jPanel5.add(jPanel6, java.awt.BorderLayout.PAGE_START);
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jTable1.setRowHeight(22);
+        jScrollPane4.setViewportView(jTable1);
+
+        jPanel5.add(jScrollPane4, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane2.addTab(org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jPanel5.TabConstraints.tabTitle"), new javax.swing.ImageIcon(getClass().getResource("/com/github/quantrresearch/sharepoint/online/fileicon/excel.png")), jPanel5); // NOI18N
+
+        jPanel2.add(jTabbedPane2, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jPanel2.TabConstraints.tabTitle"), jPanel2); // NOI18N
 
@@ -229,39 +256,38 @@ public class ListPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_viewDataComboBoxActionPerformed
 
     private void exportColumnExcelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportColumnExcelButtonActionPerformed
-		JFileChooser fc = new JFileChooser("C:/");
+		JFileChooser fc = new JFileChooser();
+		fc.setSelectedFile(new File("columns.xlsx"));
 		int retrival = fc.showSaveDialog(null);
 
 		if (retrival == fc.APPROVE_OPTION) {
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("Datatypes in Java");
-			Object[][] datatypes = {
-				{"Datatype", "Type", "Size(in bytes)"},
-				{"int", "Primitive", 2},
-				{"float", "Primitive", 4},
-				{"double", "Primitive", 8},
-				{"char", "Primitive", 1},
-				{"String", "Non-Primitive", "No fixed size"}
-			};
+			XSSFSheet sheet = workbook.createSheet("Columns");
 
 			int rowNum = 0;
 			System.out.println("Creating excel");
 
-			for (Object[] datatype : datatypes) {
-				Row row = sheet.createRow(rowNum++);
-				int colNum = 0;
-				for (Object field : datatype) {
-					Cell cell = row.createCell(colNum++);
-					if (field instanceof String) {
-						cell.setCellValue((String) field);
-					} else if (field instanceof Integer) {
-						cell.setCellValue((Integer) field);
-					}
-				}
+			Row row;
+			Cell cell;
+			row = sheet.createRow(rowNum++);
+			row.createCell(0).setCellValue("Title");
+			row.createCell(1).setCellValue("Type");
+			int nameIndex = columnTableModel.getColumnIndex("Name");
+			int typeIndex = columnTableModel.getColumnIndex("Type");
+			for (int x = 0; x < columnTableModel.getRowCount(); x++) {
+				row = sheet.createRow(rowNum++);
+				cell = row.createCell(0);
+				cell.setCellValue((String) columnTableModel.getValueAt(x, nameIndex));
+				cell = row.createCell(1);
+				cell.setCellValue((String) columnTableModel.getValueAt(x, typeIndex));
 			}
 
 			try {
-				FileOutputStream outputStream = new FileOutputStream(fc.getSelectedFile());
+				File file = fc.getSelectedFile();
+				if (!file.getName().endsWith(".xlsx")) {
+					file = new File(file.getAbsolutePath() + ".xlsx");
+				}
+				FileOutputStream outputStream = new FileOutputStream(file);
 				workbook.write(outputStream);
 				workbook.close();
 			} catch (FileNotFoundException e) {
@@ -274,22 +300,31 @@ public class ListPanel extends javax.swing.JPanel {
 		}
     }//GEN-LAST:event_exportColumnExcelButtonActionPerformed
 
+    private void chooseImportColumnsExcelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseImportColumnsExcelButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_chooseImportColumnsExcelButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton chooseImportColumnsExcelButton;
     private javax.swing.JTable columnTable;
     private javax.swing.JTable dataTable;
     private javax.swing.JButton exportColumnExcelButton;
-    private javax.swing.JButton exportColumnExcelButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JTable jTable1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;

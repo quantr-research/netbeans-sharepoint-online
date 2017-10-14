@@ -207,6 +207,10 @@ public final class SharePointTopComponent extends TopComponent {
 		settingDialog.pathTextField.setText(path);
 		settingDialog.setVisible(true);
 		if (settingDialog.isSave) {
+			String savedServers = NbPreferences.forModule(SharePointTopComponent.class).get("servers", "");
+			TreeSet<String> set = new TreeSet<>(Arrays.asList(savedServers.split(",")));
+			set.remove(serverNode.text);
+
 			Keyring.save(serverNode.text + "-sharepointDomain", settingDialog.domainTextField.getText().toCharArray(), null);
 			Keyring.save(serverNode.text + "-sharepointUsername", settingDialog.usernameTextField.getText().toCharArray(), null);
 			Keyring.save(serverNode.text + "-sharepointPassword", settingDialog.passwordField.getPassword(), null);
@@ -214,11 +218,14 @@ public final class SharePointTopComponent extends TopComponent {
 
 			SharePointTreeNode serversNode = (SharePointTreeNode) serverNode.getParent();
 			domain = Keyring.read(serverNode.text + "-sharepointDomain") == null ? null : new String(Keyring.read(serverNode.text + "-sharepointDomain"));
+			set.add(domain);
+			set.remove("");
+			NbPreferences.forModule(SharePointTopComponent.class).put("servers", String.join(",", set));
 			username = Keyring.read(serverNode.text + "-sharepointUsername") == null ? null : new String(Keyring.read(serverNode.text + "-sharepointUsername"));
 			password = Keyring.read(serverNode.text + "-sharepointPassword") == null ? null : new String(Keyring.read(serverNode.text + "-sharepointPassword"));
 			path = Keyring.read(serverNode.text + "-sharepointPath") == null ? null : new String(Keyring.read(serverNode.text + "-sharepointPath"));
 			serversNode.remove(serverNode);
-			serverNode = new SharePointTreeNode(serverNode.text, "server", "server", new ServerInfo(domain, username, password, Objects.toString(path, "")));
+			serverNode = new SharePointTreeNode(domain, "server", "server", new ServerInfo(domain, username, password, Objects.toString(path, "")));
 			serversNode.add(serverNode);
 			initServerNode(serverNode);
 			treeModel.reload();

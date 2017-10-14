@@ -59,4 +59,13 @@ public class ColumnTableModel extends DefaultTableModel {
 	public Class<?> getColumnClass(int columnIndex) {
 		return Object.class;
 	}
+
+	public int getColumnIndex(String columnName) {
+		for (int x = 0; x < columnNames.length; x++) {
+			if (columnNames[x].equals(columnName)) {
+				return x;
+			}
+		}
+		return -1;
+	}
 }
