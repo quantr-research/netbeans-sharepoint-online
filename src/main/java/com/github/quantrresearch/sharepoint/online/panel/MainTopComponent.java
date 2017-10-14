@@ -41,4 +41,9 @@ public final class MainTopComponent extends TopComponent {
 		String version = p.getProperty("version");
 		// TODO read your settings according to their version
 	}
+
+	@Override
+	public int getPersistenceType() {
+		return PERSISTENCE_NEVER;
+	}
 }
