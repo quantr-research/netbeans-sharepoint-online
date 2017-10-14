@@ -2,6 +2,7 @@
 package com.github.quantrresearch.sharepoint.online.panel.list;
 
 import com.github.quantrresearch.sharepoint.online.Helper;
+import com.github.quantrresearch.sharepoint.online.ModuleLib;
 import com.github.quantrresearch.sharepoint.online.datastructure.Field;
 import com.github.quantrresearch.sharepoint.online.datastructure.ListInfo;
 import com.github.quantrresearch.sharepoint.online.datastructure.ServerInfo;
@@ -16,11 +17,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Objects;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -91,6 +92,12 @@ public class ListPanel extends javax.swing.JPanel {
         columnTable = new javax.swing.JTable();
         jToolBar3 = new javax.swing.JToolBar();
         exportColumnExcelButton = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
+        jToolBar1 = new javax.swing.JToolBar();
+        jLabel1 = new javax.swing.JLabel();
+        viewComboBox = new javax.swing.JComboBox<>();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        viewTable = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
@@ -99,12 +106,6 @@ public class ListPanel extends javax.swing.JPanel {
         createImportColumnsButton = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
         importColumnTable = new javax.swing.JTable();
-        jPanel4 = new javax.swing.JPanel();
-        jToolBar1 = new javax.swing.JToolBar();
-        jLabel1 = new javax.swing.JLabel();
-        viewComboBox = new javax.swing.JComboBox<>();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        viewTable = new javax.swing.JTable();
 
         org.openide.awt.Mnemonics.setLocalizedText(listTableCellRenderer1, org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.listTableCellRenderer1.text")); // NOI18N
 
@@ -184,6 +185,41 @@ public class ListPanel extends javax.swing.JPanel {
 
         jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jPanel3.TabConstraints.tabTitle"), jPanel3); // NOI18N
 
+        jPanel4.setLayout(new java.awt.BorderLayout());
+
+        jToolBar1.setRollover(true);
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jLabel1.text")); // NOI18N
+        jToolBar1.add(jLabel1);
+
+        viewComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        viewComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewComboBoxActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(viewComboBox);
+
+        jPanel4.add(jToolBar1, java.awt.BorderLayout.PAGE_START);
+
+        viewTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        viewTable.setRowHeight(22);
+        jScrollPane3.setViewportView(viewTable);
+
+        jPanel4.add(jScrollPane3, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jPanel4.TabConstraints.tabTitle"), jPanel4); // NOI18N
+
         jPanel2.setLayout(new java.awt.BorderLayout());
 
         jPanel5.setLayout(new java.awt.BorderLayout());
@@ -230,41 +266,6 @@ public class ListPanel extends javax.swing.JPanel {
 
         jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jPanel2.TabConstraints.tabTitle"), jPanel2); // NOI18N
 
-        jPanel4.setLayout(new java.awt.BorderLayout());
-
-        jToolBar1.setRollover(true);
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jLabel1.text")); // NOI18N
-        jToolBar1.add(jLabel1);
-
-        viewComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        viewComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewComboBoxActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(viewComboBox);
-
-        jPanel4.add(jToolBar1, java.awt.BorderLayout.PAGE_START);
-
-        viewTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        viewTable.setRowHeight(22);
-        jScrollPane3.setViewportView(viewTable);
-
-        jPanel4.add(jScrollPane3, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.jPanel4.TabConstraints.tabTitle"), jPanel4); // NOI18N
-
         add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -303,13 +304,13 @@ public class ListPanel extends javax.swing.JPanel {
 			for (int x = 0; x < columnTableModel.getRowCount(); x++) {
 				row = sheet.createRow(rowNum++);
 				cell = row.createCell(0);
-				cell.setCellValue(columnTableModel.getValueAt(x, nameIndex).toString());
+				cell.setCellValue(Objects.toString(columnTableModel.getValueAt(x, nameIndex)));
 				cell = row.createCell(1);
-				cell.setCellValue(columnTableModel.getValueAt(x, typeIndex).toString());
+				cell.setCellValue(Objects.toString(columnTableModel.getValueAt(x, typeIndex)));
 				cell = row.createCell(2);
-				cell.setCellValue(columnTableModel.getValueAt(x, requiredIndex).toString());
+				cell.setCellValue(Objects.toString(columnTableModel.getValueAt(x, requiredIndex)));
 				cell = row.createCell(3);
-				cell.setCellValue(columnTableModel.getValueAt(x, defaultValueIndex).toString());
+				cell.setCellValue(Objects.toString(columnTableModel.getValueAt(x, defaultValueIndex)));
 			}
 
 			try {
@@ -345,7 +346,7 @@ public class ListPanel extends javax.swing.JPanel {
 				Workbook workbook = new XSSFWorkbook(excelFile);
 				Sheet datatypeSheet = workbook.getSheetAt(0);
 				Iterator<Row> iterator = datatypeSheet.iterator();
-
+				iterator.next(); //skip first row
 				while (iterator.hasNext()) {
 					Row currentRow = iterator.next();
 					String title = currentRow.getCell(0) != null ? currentRow.getCell(0).getStringCellValue() : null;
@@ -371,7 +372,39 @@ public class ListPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_chooseImportColumnsExcelButtonActionPerformed
 
     private void createImportColumnsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createImportColumnsButtonActionPerformed
-		// TODO add your handling code here:
+		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
+		if (token != null) {
+			String jsonString = SPOnline.post(token, serverInfo.domain, "/_api/contextinfo", null, null);
+			JSONObject json = new JSONObject(jsonString);
+			String formDigestValue = json.getJSONObject("d").getJSONObject("GetContextWebInformation").getString("FormDigestValue");
+			for (int x = 0; x < importColumnTableModel.getRowCount(); x++) {
+				if (importColumnTableModel.getValueAt(x, 4).equals("Create")) {
+					String title = Objects.toString(importColumnTableModel.getValueAt(x, importColumnTableModel.getColumnIndex("Name")));
+					String type = Objects.toString(importColumnTableModel.getValueAt(x, importColumnTableModel.getColumnIndex("Type")));
+					ModuleLib.log(importColumnTableModel.getValueAt(x, 0));
+					int fieldTypeKind = 0;
+					switch (type) {
+						case "Integer":
+							fieldTypeKind = 1;
+							break;
+						case "Single line of text":
+							fieldTypeKind = 2;
+							break;
+						case "Note":
+							fieldTypeKind = 3;
+							break;
+						case "Date and Time":
+							fieldTypeKind = 4;
+							break;
+					}
+					System.out.println(String.format("{'Title': '%s', 'FieldTypeKind': %d, '__metadata': { 'type': 'SP.Field' }}", title, fieldTypeKind));
+					jsonString = SPOnline.post(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/Fields", String.format("{'Title': '%s', 'FieldTypeKind': %d, '__metadata': { 'type': 'SP.Field' }}", title, fieldTypeKind), formDigestValue);
+					if (jsonString != null) {
+						System.out.println(CommonLib.prettyFormatJson(jsonString));
+					}
+				}
+			}
+		}
     }//GEN-LAST:event_createImportColumnsButtonActionPerformed
 
 

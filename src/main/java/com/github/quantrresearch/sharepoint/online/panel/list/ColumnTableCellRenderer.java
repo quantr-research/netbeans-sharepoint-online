@@ -35,7 +35,7 @@ public class ColumnTableCellRenderer extends JLabel implements TableCellRenderer
 //		} else {
 		setHorizontalAlignment(SwingConstants.LEFT);
 //		}
-		if (value instanceof String) {
+		if (value instanceof String) { 
 			setText((String) value);
 		} else if (value != null) {
 			setText(value.toString());
