@@ -8,19 +8,27 @@ import com.github.quantrresearch.sharepoint.online.datastructure.ServerInfo;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -31,9 +39,11 @@ public class ListPanel extends javax.swing.JPanel {
 	public DataTableModel dataTableModel = new DataTableModel();
 	public ColumnTableModel columnTableModel = new ColumnTableModel();
 	public ViewTableModel viewTableModel = new ViewTableModel();
+	public ImportColumnTableModel importColumnTableModel = new ImportColumnTableModel();
 	ServerInfo serverInfo;
 	ListInfo listInfo;
 	HashMap<String, Field> fields = new HashMap<>();
+	HashMap<String, Field> fieldsByTitle = new HashMap<>();
 
 	/**
 	 * Creates new form ListPanel
@@ -54,6 +64,10 @@ public class ListPanel extends javax.swing.JPanel {
 		viewTable.setModel(viewTableModel);
 		viewTable.setDefaultRenderer(Object.class, new ViewTableCellRenderer());
 		viewTable.getTableHeader().setReorderingAllowed(false);
+
+		importColumnTable.setModel(importColumnTableModel);
+		importColumnTable.setDefaultRenderer(Object.class, new ImportColumnTableCellRenderer());
+		importColumnTable.getTableHeader().setReorderingAllowed(false);
 		initData();
 	}
 
@@ -82,8 +96,9 @@ public class ListPanel extends javax.swing.JPanel {
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         chooseImportColumnsExcelButton = new javax.swing.JButton();
+        createImportColumnsButton = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        importColumnTable = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         jLabel1 = new javax.swing.JLabel();
@@ -171,8 +186,6 @@ public class ListPanel extends javax.swing.JPanel {
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jTabbedPane2.setTabPlacement(javax.swing.JTabbedPane.LEFT);
-
         jPanel5.setLayout(new java.awt.BorderLayout());
 
         jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
@@ -185,9 +198,17 @@ public class ListPanel extends javax.swing.JPanel {
         });
         jPanel6.add(chooseImportColumnsExcelButton);
 
+        org.openide.awt.Mnemonics.setLocalizedText(createImportColumnsButton, org.openide.util.NbBundle.getMessage(ListPanel.class, "ListPanel.createImportColumnsButton.text")); // NOI18N
+        createImportColumnsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createImportColumnsButtonActionPerformed(evt);
+            }
+        });
+        jPanel6.add(createImportColumnsButton);
+
         jPanel5.add(jPanel6, java.awt.BorderLayout.PAGE_START);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        importColumnTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -198,8 +219,8 @@ public class ListPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jTable1.setRowHeight(22);
-        jScrollPane4.setViewportView(jTable1);
+        importColumnTable.setRowHeight(22);
+        jScrollPane4.setViewportView(importColumnTable);
 
         jPanel5.add(jScrollPane4, java.awt.BorderLayout.CENTER);
 
@@ -258,28 +279,37 @@ public class ListPanel extends javax.swing.JPanel {
     private void exportColumnExcelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportColumnExcelButtonActionPerformed
 		JFileChooser fc = new JFileChooser();
 		fc.setSelectedFile(new File("columns.xlsx"));
-		int retrival = fc.showSaveDialog(null);
+		int returnVal = fc.showSaveDialog(null);
 
-		if (retrival == fc.APPROVE_OPTION) {
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet("Columns");
 
 			int rowNum = 0;
-			System.out.println("Creating excel");
 
 			Row row;
 			Cell cell;
 			row = sheet.createRow(rowNum++);
 			row.createCell(0).setCellValue("Title");
 			row.createCell(1).setCellValue("Type");
+			row.createCell(2).setCellValue("Required");
+			row.createCell(3).setCellValue("Default value");
+
 			int nameIndex = columnTableModel.getColumnIndex("Name");
 			int typeIndex = columnTableModel.getColumnIndex("Type");
+			int requiredIndex = columnTableModel.getColumnIndex("Required");
+			int defaultValueIndex = columnTableModel.getColumnIndex("Default value");
+
 			for (int x = 0; x < columnTableModel.getRowCount(); x++) {
 				row = sheet.createRow(rowNum++);
 				cell = row.createCell(0);
-				cell.setCellValue((String) columnTableModel.getValueAt(x, nameIndex));
+				cell.setCellValue(columnTableModel.getValueAt(x, nameIndex).toString());
 				cell = row.createCell(1);
-				cell.setCellValue((String) columnTableModel.getValueAt(x, typeIndex));
+				cell.setCellValue(columnTableModel.getValueAt(x, typeIndex).toString());
+				cell = row.createCell(2);
+				cell.setCellValue(columnTableModel.getValueAt(x, requiredIndex).toString());
+				cell = row.createCell(3);
+				cell.setCellValue(columnTableModel.getValueAt(x, defaultValueIndex).toString());
 			}
 
 			try {
@@ -291,25 +321,67 @@ public class ListPanel extends javax.swing.JPanel {
 				workbook.write(outputStream);
 				workbook.close();
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+				Exceptions.printStackTrace(e);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Exceptions.printStackTrace(e);
 			}
-
-			System.out.println("Done");
 		}
     }//GEN-LAST:event_exportColumnExcelButtonActionPerformed
 
     private void chooseImportColumnsExcelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseImportColumnsExcelButtonActionPerformed
-        // TODO add your handling code here:
+		JFileChooser fc = new JFileChooser();
+		FileNameExtensionFilter ff = new FileNameExtensionFilter("Excel", "xlsx");
+		fc.addChoosableFileFilter(ff);
+		fc.setFileFilter(ff);
+
+		fc.setSelectedFile(new File("columns.xlsx"));
+		int returnVal = fc.showOpenDialog(null);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			try {
+				File file = fc.getSelectedFile();
+				importColumnTableModel.data.clear();
+				FileInputStream excelFile = new FileInputStream(file);
+				Workbook workbook = new XSSFWorkbook(excelFile);
+				Sheet datatypeSheet = workbook.getSheetAt(0);
+				Iterator<Row> iterator = datatypeSheet.iterator();
+
+				while (iterator.hasNext()) {
+					Row currentRow = iterator.next();
+					String title = currentRow.getCell(0) != null ? currentRow.getCell(0).getStringCellValue() : null;
+					String type = currentRow.getCell(1) != null ? currentRow.getCell(1).getStringCellValue() : null;
+					String required = currentRow.getCell(2) != null ? currentRow.getCell(2).getStringCellValue() : null;
+					String defaultValue = currentRow.getCell(3) != null ? currentRow.getCell(3).getStringCellValue() : null;
+
+					ArrayList<Object> a = new ArrayList<>();
+					if (fieldsByTitle.get(title) == null) {
+						a.addAll(Arrays.asList(new String[]{title, type, required, defaultValue, "Create"}));
+					} else {
+						a.addAll(Arrays.asList(new String[]{title, type, required, defaultValue, "-"}));
+					}
+					importColumnTableModel.data.add(a);
+				}
+				importColumnTableModel.fireTableDataChanged();
+			} catch (FileNotFoundException e) {
+				Exceptions.printStackTrace(e);
+			} catch (IOException e) {
+				Exceptions.printStackTrace(e);
+			}
+		}
     }//GEN-LAST:event_chooseImportColumnsExcelButtonActionPerformed
+
+    private void createImportColumnsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createImportColumnsButtonActionPerformed
+		// TODO add your handling code here:
+    }//GEN-LAST:event_createImportColumnsButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton chooseImportColumnsExcelButton;
     private javax.swing.JTable columnTable;
+    private javax.swing.JButton createImportColumnsButton;
     private javax.swing.JTable dataTable;
     private javax.swing.JButton exportColumnExcelButton;
+    private javax.swing.JTable importColumnTable;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -324,7 +396,6 @@ public class ListPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JTable jTable1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
@@ -399,7 +470,7 @@ public class ListPanel extends javax.swing.JPanel {
 			}
 			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/items");
 			if (jsonString != null) {
-				System.out.println(CommonLib.formatJson(jsonString));
+//				System.out.println(CommonLib.formatJson(jsonString));
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
@@ -477,11 +548,13 @@ public class ListPanel extends javax.swing.JPanel {
 			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
 			if (jsonString != null) {
 				fields.clear();
+				fieldsByTitle.clear();
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
 					JSONObject j = array.getJSONObject(x);
 					fields.put(j.getString("EntityPropertyName"), new Field(j.getString("Title"), j.getString("TypeDisplayName"), j.getString("InternalName"), j.getString("StaticName")));
+					fieldsByTitle.put(j.getString("Title"), new Field(j.getString("Title"), j.getString("TypeDisplayName"), j.getString("InternalName"), j.getString("StaticName")));
 				}
 			}
 		}
