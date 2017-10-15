@@ -1,16 +1,16 @@
 // License : Apache License Version 2.0  https://www.apache.org/licenses/LICENSE-2.0
 package com.github.quantrresearch.sharepoint.online.panel.doclib;
 
-import com.github.quantrresearch.sharepoint.online.Helper;
-import com.github.quantrresearch.sharepoint.online.datastructure.Field;
 import com.github.quantrresearch.sharepoint.online.datastructure.ListInfo;
 import com.github.quantrresearch.sharepoint.online.datastructure.ServerInfo;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -96,33 +96,60 @@ public class DocLibPanel extends javax.swing.JPanel {
 		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
 		if (token != null) {
 			fileTableModel.data.clear();
-			String jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/items");
-			if (jsonString != null) {
-				System.out.println(CommonLib.formatJson(jsonString));
-				JSONObject json = new JSONObject(jsonString);
-				JSONArray array = json.getJSONObject("d").getJSONArray("results");
-				for (int x = 0; x < array.length(); x++) {
-					ArrayList<Object> row = new ArrayList<>();
-					JSONObject j = array.getJSONObject(x);
-					for (String columnField : fileTableModel.columnFieldNames) {
-						try {
-							if (columnField == String.class) {
-								row.add(j.getString(columnField));
-							} else if (field.type.equals("Number")) {
-								row.add(j.getInt(field.internalName));
-							} else {
-								row.add(j.getString(field.internalName));
+			try {
+				String jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/items?$filter=" + URLEncoder.encode("FileSystemObjectType ne 0", "utf-8"));
+				if (jsonString != null) {
+					//System.out.println(CommonLib.formatJson(jsonString));
+					JSONObject json = new JSONObject(jsonString);
+					JSONArray array = json.getJSONObject("d").getJSONArray("results");
+					for (int y = 0; y < array.length(); y++) {
+						ArrayList<Object> row = new ArrayList<>();
+						JSONObject j = array.getJSONObject(y);
+						for (int x = 0; x < fileTableModel.columnFieldNames.length; x++) {
+							Class columnFieldName = fileTableModel.columnFieldtypes[x];
+							String fieldValuesAsText = j.getJSONObject("FieldValuesAsText").getJSONObject("__deferred").getString("uri");
+							jsonString = SPOnline.get(token, fieldValuesAsText);
+							JSONObject json2 = new JSONObject(jsonString);
+							System.out.println(jsonString);
+
+							try {
+								if (columnFieldName == String.class) {
+									row.add(json2.getJSONObject("d").getString(fileTableModel.columnFieldNames[x]));
+								} else if (columnFieldName == Integer.class) {
+									row.add(json2.getJSONObject("d").getInt(fileTableModel.columnFieldNames[x]));
+								} else {
+									row.add("ERROR");
+								}
+							} catch (Exception ex) {
+								ex.printStackTrace();
+								row.add("ERROR");
 							}
-						} catch (Exception ex) {
-							ex.printStackTrace();
-							row.add("ERROR");
+
+//						if (fileTableModel.columnNames[x].equals("Name") || fileTableModel.columnNames[x].equals("Size")) {
+//							row.add(json2.getJSONObject("d").getString(fileTableModel.columnFieldNames[x]));
+//						} else {
+//							try {
+//								if (columnFieldName == String.class) {
+//									row.add(j.getString(fileTableModel.columnFieldNames[x]));
+//								} else if (columnFieldName == Integer.class) {
+//									row.add(j.getInt(fileTableModel.columnFieldNames[x]));
+//								} else {
+//									row.add("ERROR");
+//								}
+//							} catch (Exception ex) {
+//								ex.printStackTrace();
+//								row.add("ERROR");
+//							}
+//						}
 						}
+						//System.out.println("r=" + row.size());
+						fileTableModel.data.add(row);
 					}
-					//System.out.println("r=" + row.size());
-					fileTableModel.data.add(row);
 				}
-				fileTableModel.fireTableStructureChanged();
+			} catch (Exception ex) {
+				Exceptions.printStackTrace(ex);
 			}
+			fileTableModel.fireTableStructureChanged();
 			CommonLib.autoResizeColumn(fileTable);
 		}
 	}

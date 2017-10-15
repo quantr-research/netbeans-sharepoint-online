@@ -1,7 +1,5 @@
 package com.github.quantrresearch.sharepoint.online.panel.doclib;
 
-import com.github.quantrresearch.sharepoint.online.panel.list.*;
-import com.github.quantrresearch.sharepoint.online.datastructure.Field;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
@@ -11,9 +9,9 @@ import javax.swing.table.DefaultTableModel;
  */
 public class FileTableModel extends DefaultTableModel {
 
-	public String columnNames[] = {"Name", "Modified", "Created", "FieldValuesAsText"};
-	public String columnFieldNames[] = {"Title", "Modified", "Created", "FieldValuesAsText"};
-	public Class columnFieldtypes[] = {String.class, String.class, String.class, String.class};
+	public String columnNames[] = {"Name", "Author", "Modified", "Created", "Size"};
+	public String columnFieldNames[] = {"FileLeafRef", "Author", "Modified", "Created", "File_x005f_x0020_x005f_Size"};
+	public Class columnFieldtypes[] = {String.class, String.class, String.class, String.class, Integer.class};
 	public ArrayList<ArrayList<Object>> data = new ArrayList<>();
 
 	@Override

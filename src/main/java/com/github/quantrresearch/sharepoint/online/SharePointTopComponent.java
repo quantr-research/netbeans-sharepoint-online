@@ -369,7 +369,6 @@ public final class SharePointTopComponent extends TopComponent {
 			try {
 				jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists?$select=ID,Title&$filter=" + URLEncoder.encode("basetype eq 1", "utf-8") + "&$orderby=title");
 				if (jsonString != null) {
-					System.out.println(CommonLib.formatJson(jsonString));
 					JSONObject json = new JSONObject(jsonString);
 					JSONArray array = json.getJSONObject("d").getJSONArray("results");
 					for (int x = 0; x < array.length(); x++) {
