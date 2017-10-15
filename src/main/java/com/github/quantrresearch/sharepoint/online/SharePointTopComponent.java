@@ -9,6 +9,8 @@ import com.github.quantrresearch.sharepoint.online.panel.MainTopComponent;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
 import java.awt.BorderLayout;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.TreeSet;
@@ -21,6 +23,7 @@ import org.netbeans.api.keyring.Keyring;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Exceptions;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.NbPreferences;
@@ -316,7 +319,9 @@ public final class SharePointTopComponent extends TopComponent {
 		serverNode.add(listsNode);
 		initLists(listsNode);
 		serverNode.add(new SharePointTreeNode("Page", "pages", "page", null));
-		serverNode.add(new SharePointTreeNode("Document library", "Document libraries", "book", null));
+		SharePointTreeNode docLibsNode = new SharePointTreeNode("Document library", "Document libraries", "book", null);
+		serverNode.add(docLibsNode);
+		initDocLibs(docLibsNode);
 		serverNode.add(new SharePointTreeNode("App", "app", "brick", null));
 		serverNode.add(new SharePointTreeNode("Subsite", "subsites", "world", null));
 	}
@@ -327,18 +332,47 @@ public final class SharePointTopComponent extends TopComponent {
 
 		if (token != null) {
 			String jsonString = SPOnline.post(token, serverInfo.domain, serverInfo.path + "/_api/contextinfo", null, null);
-			//String formDigestValue = json.getJSONObject("d").getJSONObject("GetContextWebInformation").getString("FormDigestValue");
-			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists?$select=ID,Title");
-			if (jsonString != null) {
-				JSONObject json = new JSONObject(jsonString);
-				JSONArray array = json.getJSONObject("d").getJSONArray("results");
-				for (int x = 0; x < array.length(); x++) {
-					JSONObject j = array.getJSONObject(x);
-					ListInfo listInfo = new ListInfo();
-					listInfo.id = j.getString("Id");
-					SharePointTreeNode listNode = new SharePointTreeNode(j.getString("Title"), "list", "table", listInfo);
-					listsNode.add(listNode);
+			try {
+				jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists?$select=ID,Title&$filter=" + URLEncoder.encode("basetype ne 1", "utf-8") + "&$orderby=title");
+				if (jsonString != null) {
+					JSONObject json = new JSONObject(jsonString);
+					JSONArray array = json.getJSONObject("d").getJSONArray("results");
+					for (int x = 0; x < array.length(); x++) {
+						JSONObject j = array.getJSONObject(x);
+						ListInfo listInfo = new ListInfo();
+						listInfo.id = j.getString("Id");
+						SharePointTreeNode listNode = new SharePointTreeNode(j.getString("Title"), "list", "table", listInfo);
+						listsNode.add(listNode);
+					}
 				}
+			} catch (UnsupportedEncodingException ex) {
+				Exceptions.printStackTrace(ex);
+			}
+		}
+	}
+
+	private void initDocLibs(SharePointTreeNode docLibsNode) {
+		ServerInfo serverInfo = (ServerInfo) Helper.getNodeObject(docLibsNode, ServerInfo.class);
+		Pair<String, String> token = SPOnline.login(serverInfo.username, serverInfo.password, serverInfo.domain);
+
+		if (token != null) {
+			String jsonString = SPOnline.post(token, serverInfo.domain, serverInfo.path + "/_api/contextinfo", null, null);
+			try {
+				jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists?$select=ID,Title&$filter=" + URLEncoder.encode("basetype eq 1", "utf-8") + "&$orderby=title");
+				if (jsonString != null) {
+					System.out.println(CommonLib.formatJson(jsonString));
+					JSONObject json = new JSONObject(jsonString);
+					JSONArray array = json.getJSONObject("d").getJSONArray("results");
+					for (int x = 0; x < array.length(); x++) {
+						JSONObject j = array.getJSONObject(x);
+						ListInfo listInfo = new ListInfo();
+						listInfo.id = j.getString("Id");
+						SharePointTreeNode docLibNode = new SharePointTreeNode(j.getString("Title"), "doclib", "script", listInfo);
+						docLibsNode.add(docLibNode);
+					}
+				}
+			} catch (UnsupportedEncodingException ex) {
+				Exceptions.printStackTrace(ex);
 			}
 		}
 	}
