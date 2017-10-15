@@ -72,6 +72,7 @@ public class DocLibPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        fileTable.setRowHeight(22);
         jScrollPane2.setViewportView(fileTable);
 
         jPanel2.add(jScrollPane2, java.awt.BorderLayout.CENTER);
