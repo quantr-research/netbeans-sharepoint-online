@@ -6,6 +6,7 @@ import com.github.quantrresearch.sharepoint.online.datastructure.ServerInfo;
 import com.github.quantrresearch.sharepoint.online.dialog.SettingDialog;
 import com.github.quantrresearch.sharepoint.online.panel.list.ListPanel;
 import com.github.quantrresearch.sharepoint.online.panel.MainTopComponent;
+import com.github.quantrresearch.sharepoint.online.panel.doclib.DocLibPanel;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
 import java.awt.BorderLayout;
@@ -160,6 +161,14 @@ public final class SharePointTopComponent extends TopComponent {
 				mainTopComponent.setName(node.text);
 				mainTopComponent.setIcon(CommonLib.iconToImage(SharePointTreeNode.iconRoot.get(node.icon)));
 				mainTopComponent.add(new ListPanel(serverInfo, (ListInfo) node.object), BorderLayout.CENTER);
+				mainTopComponent.open();
+				mainTopComponent.requestActive();
+			} else if (node.type.equals("docLib")) {
+				ServerInfo serverInfo = (ServerInfo) Helper.getNodeObject(node, ServerInfo.class);
+				MainTopComponent mainTopComponent = new MainTopComponent();
+				mainTopComponent.setName(node.text);
+				mainTopComponent.setIcon(CommonLib.iconToImage(SharePointTreeNode.iconRoot.get(node.icon)));
+				mainTopComponent.add(new DocLibPanel(serverInfo, (ListInfo) node.object), BorderLayout.CENTER);
 				mainTopComponent.open();
 				mainTopComponent.requestActive();
 			}
@@ -367,7 +376,7 @@ public final class SharePointTopComponent extends TopComponent {
 						JSONObject j = array.getJSONObject(x);
 						ListInfo listInfo = new ListInfo();
 						listInfo.id = j.getString("Id");
-						SharePointTreeNode docLibNode = new SharePointTreeNode(j.getString("Title"), "doclib", "script", listInfo);
+						SharePointTreeNode docLibNode = new SharePointTreeNode(j.getString("Title"), "docLib", "script", listInfo);
 						docLibsNode.add(docLibNode);
 					}
 				}

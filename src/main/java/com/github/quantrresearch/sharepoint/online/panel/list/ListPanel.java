@@ -46,9 +46,6 @@ public class ListPanel extends javax.swing.JPanel {
 	HashMap<String, Field> fields = new HashMap<>();
 	HashMap<String, Field> fieldsByTitle = new HashMap<>();
 
-	/**
-	 * Creates new form ListPanel
-	 */
 	public ListPanel(ServerInfo serverInfo, ListInfo listInfo) {
 		super();
 		this.serverInfo = serverInfo;
