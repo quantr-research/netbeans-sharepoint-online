@@ -517,7 +517,7 @@ public class ListPanel extends javax.swing.JPanel {
 							}
 						} catch (Exception ex) {
 							ex.printStackTrace();
-							row.add("ERROR");
+							row.add("ERROR " + field.type);
 						}
 					}
 					//System.out.println("r=" + row.size());
