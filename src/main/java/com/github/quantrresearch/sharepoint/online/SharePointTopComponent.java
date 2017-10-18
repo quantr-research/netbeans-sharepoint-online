@@ -11,15 +11,19 @@ import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
 import java.awt.BorderLayout;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -167,6 +171,11 @@ public final class SharePointTopComponent extends TopComponent {
         importSettingsButton.setFocusable(false);
         importSettingsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         importSettingsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        importSettingsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importSettingsButtonActionPerformed(evt);
+            }
+        });
         jToolBar1.add(importSettingsButton);
 
         add(jToolBar1, java.awt.BorderLayout.PAGE_START);
@@ -318,6 +327,45 @@ public final class SharePointTopComponent extends TopComponent {
 			}
 		}
     }//GEN-LAST:event_exportSettingsButtonActionPerformed
+
+    private void importSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importSettingsButtonActionPerformed
+		JFileChooser fc = new JFileChooser();
+		FileNameExtensionFilter ff = new FileNameExtensionFilter("Text", "txt");
+		fc.addChoosableFileFilter(ff);
+		fc.setFileFilter(ff);
+
+		fc.setSelectedFile(new File("setting.txt"));
+		int returnVal = fc.showOpenDialog(null);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			try {
+				List<String> lines = IOUtils.readLines(new FileReader(fc.getSelectedFile()));
+				String savedServers = NbPreferences.forModule(SharePointTopComponent.class).get("servers", "");
+				TreeSet<String> set = new TreeSet<>(Arrays.asList(savedServers.split(",")));
+				for (int x = 0; x < lines.size(); x += 4) {
+					String domain = lines.get(x);
+					String username = lines.get(x + 1);
+					String password = lines.get(x + 2);
+					String path = lines.get(x + 3);
+					String serverName = domain;
+
+					Keyring.save(serverName + "-sharepointDomain", serverName.toCharArray(), null);
+					Keyring.save(serverName + "-sharepointUsername", username.toCharArray(), null);
+					Keyring.save(serverName + "-sharepointPassword", password.toCharArray(), null);
+					Keyring.save(serverName + "-sharepointPath", path.toCharArray(), null);
+
+					set.add(serverName);
+				}
+				set.remove("");
+				NbPreferences.forModule(SharePointTopComponent.class).put("servers", String.join(",", set));
+				refreshTree();
+			} catch (FileNotFoundException ex) {
+				Exceptions.printStackTrace(ex);
+			} catch (IOException ex) {
+				Exceptions.printStackTrace(ex);
+			}
+		}
+    }//GEN-LAST:event_importSettingsButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem addserverMenuItem;

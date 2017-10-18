@@ -602,7 +602,7 @@ public class ListPanel extends javax.swing.JPanel {
 							}
 						} catch (Exception ex) {
 							ex.printStackTrace();
-							row.add("ERROR " + field.type);
+							row.add("ERROR " + field.internalName);
 						}
 					}
 					//System.out.println("r=" + row.size());
