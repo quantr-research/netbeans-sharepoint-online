@@ -258,9 +258,16 @@ public final class SharePointTopComponent extends TopComponent {
 
 			Keyring.save(serverNode.text + "-sharepointDomain", settingDialog.domainTextField.getText().toCharArray(), null);
 			Keyring.save(serverNode.text + "-sharepointUsername", settingDialog.usernameTextField.getText().toCharArray(), null);
-			Keyring.save(serverNode.text + "-sharepointPassword", settingDialog.passwordField.getPassword(), null);
-			Keyring.save(serverNode.text + "-sharepointPath", settingDialog.pathTextField.getText().toCharArray(), null);
-
+			if (settingDialog.passwordField.equals("")) {
+				Keyring.delete(serverNode.text + "-sharepointPassword");
+			} else {
+				Keyring.save(serverNode.text + "-sharepointPassword", settingDialog.passwordField.getPassword(), null);
+			}
+			if (settingDialog.pathTextField.getText().equals("")) {
+				Keyring.delete(serverNode.text + "-sharepointPath");
+			} else {
+				Keyring.save(serverNode.text + "-sharepointPath", settingDialog.pathTextField.getText().toCharArray(), null);
+			}
 			SharePointTreeNode serversNode = (SharePointTreeNode) serverNode.getParent();
 			domain = Keyring.read(serverNode.text + "-sharepointDomain") == null ? null : new String(Keyring.read(serverNode.text + "-sharepointDomain"));
 			set.add(domain);
@@ -288,6 +295,10 @@ public final class SharePointTopComponent extends TopComponent {
 		String savedServers = NbPreferences.forModule(SharePointTopComponent.class).get("servers", "");
 		TreeSet<String> set = new TreeSet<>(Arrays.asList(savedServers.split(",")));
 		set.remove(node.text);
+		Keyring.delete(node.text + "-sharepointDomain");
+		Keyring.delete(node.text + "-sharepointUsername");
+		Keyring.delete(node.text + "-sharepointPassword");
+		Keyring.delete(node.text + "-sharepointPath");
 		NbPreferences.forModule(SharePointTopComponent.class).put("servers", String.join(",", set));
 		refreshTree();
     }//GEN-LAST:event_deleteServerMenuItemActionPerformed
@@ -316,10 +327,10 @@ public final class SharePointTopComponent extends TopComponent {
 					String username = Keyring.read(server + "-sharepointUsername") == null ? null : new String(Keyring.read(server + "-sharepointUsername"));
 					String password = Keyring.read(server + "-sharepointPassword") == null ? null : new String(Keyring.read(server + "-sharepointPassword"));
 					String path = Keyring.read(server + "-sharepointPath") == null ? null : new String(Keyring.read(server + "-sharepointPath"));
-					sb.append(domain + "\n");
-					sb.append(username + "\n");
-					sb.append(password + "\n");
-					sb.append(path + "\n");
+					sb.append(domain + "\r\n");
+					sb.append(username + "\r\n");
+					sb.append(password + "\r\n");
+					sb.append(path + "\r\n");
 				}
 				FileUtils.writeStringToFile(fc.getSelectedFile(), sb.toString(), "utf-8");
 			} catch (IOException ex) {
