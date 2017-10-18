@@ -290,8 +290,9 @@ public class ListPanel extends javax.swing.JPanel {
 			row = sheet.createRow(rowNum++);
 			row.createCell(0).setCellValue("Title");
 			row.createCell(1).setCellValue("Type");
-			row.createCell(2).setCellValue("Required");
-			row.createCell(3).setCellValue("Default value");
+			row.createCell(2).setCellValue("Field Type Kind");
+			row.createCell(3).setCellValue("Required");
+			row.createCell(4).setCellValue("Default value");
 
 			int nameIndex = columnTableModel.getColumnIndex("Name");
 			int typeIndex = columnTableModel.getColumnIndex("Type");
@@ -351,14 +352,15 @@ public class ListPanel extends javax.swing.JPanel {
 					Row currentRow = iterator.next();
 					String title = currentRow.getCell(0) != null ? currentRow.getCell(0).getStringCellValue() : null;
 					String type = currentRow.getCell(1) != null ? currentRow.getCell(1).getStringCellValue() : null;
-					String required = currentRow.getCell(2) != null ? currentRow.getCell(2).getStringCellValue() : null;
-					String defaultValue = currentRow.getCell(3) != null ? currentRow.getCell(3).getStringCellValue() : null;
+					String fieldTypeKind = currentRow.getCell(3) != null ? currentRow.getCell(1).getStringCellValue() : null;
+					String required = currentRow.getCell(4) != null ? currentRow.getCell(2).getStringCellValue() : null;
+					String defaultValue = currentRow.getCell(4) != null ? currentRow.getCell(3).getStringCellValue() : null;
 
 					ArrayList<Object> a = new ArrayList<>();
 					if (fieldsByTitle.get(title) == null) {
-						a.addAll(Arrays.asList(new String[]{title, type, required, defaultValue, "Create"}));
+						a.addAll(Arrays.asList(new String[]{title, type, fieldTypeKind, required, defaultValue, "Create"}));
 					} else {
-						a.addAll(Arrays.asList(new String[]{title, type, required, defaultValue, "-"}));
+						a.addAll(Arrays.asList(new String[]{title, type, fieldTypeKind, required, defaultValue, "-"}));
 					}
 					importColumnTableModel.data.add(a);
 				}
