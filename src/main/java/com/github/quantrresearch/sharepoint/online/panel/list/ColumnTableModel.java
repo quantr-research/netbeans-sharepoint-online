@@ -9,9 +9,9 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ColumnTableModel extends DefaultTableModel {
 
-	public String columnNames[] = {"Name", "Type", "Required", "Default value"};
-	public String columnFieldNames[] = {"Title", "TypeDisplayName", "Required", "DefaultValue"};
-	public Class columnFieldtypes[] = {String.class, String.class, Boolean.class, String.class};
+	public String columnNames[] = {"Name", "Type", "Field Type Kind", "Required", "Default value"};
+	public String columnFieldNames[] = {"Title", "TypeDisplayName", "FieldTypeKind", "Required", "DefaultValue"};
+	public Class columnFieldtypes[] = {String.class, String.class, Integer.class, Boolean.class, String.class};
 	public ArrayList<ArrayList<Object>> data = new ArrayList<>();
 
 	@Override

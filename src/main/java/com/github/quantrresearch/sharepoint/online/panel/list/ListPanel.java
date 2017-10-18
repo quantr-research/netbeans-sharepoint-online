@@ -295,6 +295,7 @@ public class ListPanel extends javax.swing.JPanel {
 
 			int nameIndex = columnTableModel.getColumnIndex("Name");
 			int typeIndex = columnTableModel.getColumnIndex("Type");
+			int fieldTypeKindIndex = columnTableModel.getColumnIndex("FieldTypeKind");
 			int requiredIndex = columnTableModel.getColumnIndex("Required");
 			int defaultValueIndex = columnTableModel.getColumnIndex("Default value");
 
@@ -305,8 +306,10 @@ public class ListPanel extends javax.swing.JPanel {
 				cell = row.createCell(1);
 				cell.setCellValue(Objects.toString(columnTableModel.getValueAt(x, typeIndex)));
 				cell = row.createCell(2);
-				cell.setCellValue(Objects.toString(columnTableModel.getValueAt(x, requiredIndex)));
+				cell.setCellValue(Objects.toString(columnTableModel.getValueAt(x, fieldTypeKindIndex)));
 				cell = row.createCell(3);
+				cell.setCellValue(Objects.toString(columnTableModel.getValueAt(x, requiredIndex)));
+				cell = row.createCell(4);
 				cell.setCellValue(Objects.toString(columnTableModel.getValueAt(x, defaultValueIndex)));
 			}
 
@@ -378,7 +381,6 @@ public class ListPanel extends javax.swing.JPanel {
 				if (importColumnTableModel.getValueAt(x, 4).equals("Create")) {
 					String title = Objects.toString(importColumnTableModel.getValueAt(x, importColumnTableModel.getColumnIndex("Name")));
 					String type = Objects.toString(importColumnTableModel.getValueAt(x, importColumnTableModel.getColumnIndex("Type")));
-					ModuleLib.log(importColumnTableModel.getValueAt(x, 0));
 					int fieldTypeKind = 0;
 					switch (type) {
 						case "Integer":
@@ -393,6 +395,89 @@ public class ListPanel extends javax.swing.JPanel {
 						case "Date and Time":
 							fieldTypeKind = 4;
 							break;
+						case "Counter":
+							fieldTypeKind = 5;
+							break;
+						case "Choice":
+							fieldTypeKind = 6;
+							break;
+						case "Lookup":
+							fieldTypeKind = 7;
+							break;
+						case "Boolean":
+							fieldTypeKind = 8;
+							break;
+						case "Number":
+							fieldTypeKind = 9;
+							break;
+						case "Currency":
+							fieldTypeKind = 10;
+							break;
+						case "URL":
+							fieldTypeKind = 11;
+							break;
+						case "Computed":
+							fieldTypeKind = 12;
+							break;
+						case "Threading":
+							fieldTypeKind = 13;
+							break;
+						case "Guid":
+							fieldTypeKind = 14;
+							break;
+						case "MultiChoice":
+							fieldTypeKind = 15;
+							break;
+						case "GridChoice":
+							fieldTypeKind = 16;
+							break;
+						case "Calculated":
+							fieldTypeKind = 17;
+							break;
+						case "File":
+							fieldTypeKind = 18;
+							break;
+						case "Attachments":
+							fieldTypeKind = 19;
+							break;
+						case "Person or Group":
+							fieldTypeKind = 20;
+							break;
+						case "Recurrence":
+							fieldTypeKind = 21;
+							break;
+						case "CrossProjectLink":
+							fieldTypeKind = 22;
+							break;
+						case "ModStat":
+							fieldTypeKind = 23;
+							break;
+						case "Error":
+							fieldTypeKind = 24;
+							break;
+						case "Content Type Id":
+							fieldTypeKind = 25;
+							break;
+						case "PageSeparator":
+							fieldTypeKind = 26;
+							break;
+						case "ThreadIndex":
+							fieldTypeKind = 27;
+							break;
+						case "WorkflowStatus":
+							fieldTypeKind = 28;
+							break;
+						case "AllDayEvent":
+							fieldTypeKind = 29;
+							break;
+						case "WorkflowEventType":
+							fieldTypeKind = 30;
+							break;
+						case "MaxItems":
+							fieldTypeKind = 31;
+							break;
+						default:
+							System.err.println("Unsupported fieldTypeKind " + fieldTypeKind);
 					}
 					System.out.println(String.format("{'Title': '%s', 'FieldTypeKind': %d, '__metadata': { 'type': 'SP.Field' }}", title, fieldTypeKind));
 					jsonString = SPOnline.post(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/Fields", String.format("{'Title': '%s', 'FieldTypeKind': %d, '__metadata': { 'type': 'SP.Field' }}", title, fieldTypeKind), formDigestValue);
@@ -449,7 +534,7 @@ public class ListPanel extends javax.swing.JPanel {
 			String jsonString = SPOnline.post(token, serverInfo.domain, serverInfo.path + "/_api/contextinfo", null, null);
 			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
 			if (jsonString != null) {
-				//System.out.println(CommonLib.formatJson(jsonString));
+				System.out.println(CommonLib.formatJson(jsonString));
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {

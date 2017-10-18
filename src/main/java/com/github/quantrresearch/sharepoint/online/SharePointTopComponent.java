@@ -10,13 +10,18 @@ import com.github.quantrresearch.sharepoint.online.panel.doclib.DocLibPanel;
 import com.peterswing.CommonLib;
 import hk.quantr.sharepoint.SPOnline;
 import java.awt.BorderLayout;
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.TreeSet;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -81,6 +86,8 @@ public final class SharePointTopComponent extends TopComponent {
         jToolBar1 = new javax.swing.JToolBar();
         expandTreeButton = new javax.swing.JButton();
         collapseButton = new javax.swing.JButton();
+        exportSettingsButton = new javax.swing.JButton();
+        importSettingsButton = new javax.swing.JButton();
 
         addserverMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/github/quantrresearch/sharepoint/online/icon/add.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(addserverMenuItem, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.addserverMenuItem.text")); // NOI18N
@@ -144,6 +151,23 @@ public final class SharePointTopComponent extends TopComponent {
             }
         });
         jToolBar1.add(collapseButton);
+
+        org.openide.awt.Mnemonics.setLocalizedText(exportSettingsButton, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.exportSettingsButton.text")); // NOI18N
+        exportSettingsButton.setFocusable(false);
+        exportSettingsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        exportSettingsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        exportSettingsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportSettingsButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(exportSettingsButton);
+
+        org.openide.awt.Mnemonics.setLocalizedText(importSettingsButton, org.openide.util.NbBundle.getMessage(SharePointTopComponent.class, "SharePointTopComponent.importSettingsButton.text")); // NOI18N
+        importSettingsButton.setFocusable(false);
+        importSettingsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        importSettingsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(importSettingsButton);
 
         add(jToolBar1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
@@ -267,12 +291,42 @@ public final class SharePointTopComponent extends TopComponent {
 		CommonLib.expandAll(tree, false);
     }//GEN-LAST:event_collapseButtonActionPerformed
 
+    private void exportSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSettingsButtonActionPerformed
+		JFileChooser fc = new JFileChooser();
+		fc.setSelectedFile(new File("columns.xlsx"));
+		int returnVal = fc.showSaveDialog(null);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			try {
+				String savedServers = NbPreferences.forModule(SharePointTopComponent.class).get("servers", "");
+				TreeSet<String> set = new TreeSet<>(Arrays.asList(savedServers.split(",")));
+				set.remove("");
+				StringBuilder sb = new StringBuilder();
+				for (String server : set) {
+					String domain = Keyring.read(server + "-sharepointDomain") == null ? null : new String(Keyring.read(server + "-sharepointDomain"));
+					String username = Keyring.read(server + "-sharepointUsername") == null ? null : new String(Keyring.read(server + "-sharepointUsername"));
+					String password = Keyring.read(server + "-sharepointPassword") == null ? null : new String(Keyring.read(server + "-sharepointPassword"));
+					String path = Keyring.read(server + "-sharepointPath") == null ? null : new String(Keyring.read(server + "-sharepointPath"));
+					sb.append(domain + "\n");
+					sb.append(username + "\n");
+					sb.append(password + "\n");
+					sb.append(path + "\n");
+				}
+				FileUtils.writeStringToFile(fc.getSelectedFile(), savedServers, "utf-8");
+			} catch (IOException ex) {
+				Exceptions.printStackTrace(ex);
+			}
+		}
+    }//GEN-LAST:event_exportSettingsButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem addserverMenuItem;
     private javax.swing.JButton collapseButton;
     private javax.swing.JMenuItem deleteServerMenuItem;
     private javax.swing.JMenuItem editServerMenuItem;
     private javax.swing.JButton expandTreeButton;
+    private javax.swing.JButton exportSettingsButton;
+    private javax.swing.JButton importSettingsButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPopupMenu settingPopupMenu;
