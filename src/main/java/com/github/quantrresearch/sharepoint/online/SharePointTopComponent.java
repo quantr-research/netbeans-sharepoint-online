@@ -293,7 +293,7 @@ public final class SharePointTopComponent extends TopComponent {
 
     private void exportSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportSettingsButtonActionPerformed
 		JFileChooser fc = new JFileChooser();
-		fc.setSelectedFile(new File("columns.xlsx"));
+		fc.setSelectedFile(new File("setting.txt"));
 		int returnVal = fc.showSaveDialog(null);
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -312,7 +312,7 @@ public final class SharePointTopComponent extends TopComponent {
 					sb.append(password + "\n");
 					sb.append(path + "\n");
 				}
-				FileUtils.writeStringToFile(fc.getSelectedFile(), savedServers, "utf-8");
+				FileUtils.writeStringToFile(fc.getSelectedFile(), sb.toString(), "utf-8");
 			} catch (IOException ex) {
 				Exceptions.printStackTrace(ex);
 			}
