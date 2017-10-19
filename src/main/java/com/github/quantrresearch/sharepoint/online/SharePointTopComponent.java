@@ -30,6 +30,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.netbeans.api.keyring.Keyring;
+import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -424,7 +425,10 @@ public final class SharePointTopComponent extends TopComponent {
 		String savedServers = NbPreferences.forModule(SharePointTopComponent.class).get("servers", "");
 		TreeSet<String> set = new TreeSet<>(Arrays.asList(savedServers.split(",")));
 		set.remove("");
+		ProgressHandle handle = ProgressHandle.createHandle("Refreshng SharePoint");
+		handle.start(100);
 		for (String server : set) {
+			handle.progress(0);
 			String domain = Keyring.read(server + "-sharepointDomain") == null ? null : new String(Keyring.read(server + "-sharepointDomain"));
 			String username = Keyring.read(server + "-sharepointUsername") == null ? null : new String(Keyring.read(server + "-sharepointUsername"));
 			String password = Keyring.read(server + "-sharepointPassword") == null ? null : new String(Keyring.read(server + "-sharepointPassword"));
@@ -432,7 +436,9 @@ public final class SharePointTopComponent extends TopComponent {
 			SharePointTreeNode serverNode = new SharePointTreeNode(server, "server", "server", new ServerInfo(domain, username, password, Objects.toString(path, "")));
 			rootNode.add(serverNode);
 			initServerNode(serverNode);
+			handle.progress(50);
 		}
+		handle.finish();
 		treeModel.reload();
 	}
 

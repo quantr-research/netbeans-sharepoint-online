@@ -587,7 +587,7 @@ public class ListPanel extends javax.swing.JPanel {
 			}
 			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/items");
 			if (jsonString != null) {
-//				System.out.println(CommonLib.formatJson(jsonString));
+				System.out.println(CommonLib.formatJson(jsonString));
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
@@ -604,7 +604,11 @@ public class ListPanel extends javax.swing.JPanel {
 							}
 						} catch (Exception ex) {
 							ex.printStackTrace();
-							row.add("ERROR " + field.internalName);
+							if (field.internalName != null) {
+								row.add("ERROR " + field.internalName);
+							} else {
+								row.add("ERROR " + field);
+							}
 						}
 					}
 					//System.out.println("r=" + row.size());
