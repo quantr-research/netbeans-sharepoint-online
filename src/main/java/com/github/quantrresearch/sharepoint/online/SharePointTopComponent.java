@@ -329,8 +329,8 @@ public final class SharePointTopComponent extends TopComponent {
 					String path = Keyring.read(server + "-sharepointPath") == null ? null : new String(Keyring.read(server + "-sharepointPath"));
 					sb.append(domain + "\r\n");
 					sb.append(username + "\r\n");
-					sb.append(password + "\r\n");
-					sb.append(path + "\r\n");
+					sb.append(Objects.toString(password, "") + "\r\n");
+					sb.append(Objects.toString(path, "") + "\r\n");
 				}
 				FileUtils.writeStringToFile(fc.getSelectedFile(), sb.toString(), "utf-8");
 			} catch (IOException ex) {
