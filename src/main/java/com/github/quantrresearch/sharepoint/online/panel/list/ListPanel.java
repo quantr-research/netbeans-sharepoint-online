@@ -582,7 +582,12 @@ public class ListPanel extends javax.swing.JPanel {
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONObject("Items").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
-					dataTableModel.columns.add(fields.get(array.getString(x)));
+					Field field = fields.get(array.getString(x));
+					if (field != null) {
+						dataTableModel.columns.add(field);
+					} else {
+						System.out.println("field is null " + array.getString(x));
+					}
 				}
 			}
 			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/items");
