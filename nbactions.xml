@@ -30,6 +30,8 @@
                 <packaging>*</packaging>
             </packagings>
             <goals>
+                <goal>-T</goal>
+                <goal>4</goal>
                 <goal>clean</goal>
                 <goal>install</goal>
             </goals>
