@@ -2,7 +2,6 @@
 package com.github.quantrresearch.sharepoint.online.panel.list;
 
 import com.github.quantrresearch.sharepoint.online.Helper;
-import com.github.quantrresearch.sharepoint.online.ModuleLib;
 import com.github.quantrresearch.sharepoint.online.datastructure.Field;
 import com.github.quantrresearch.sharepoint.online.datastructure.ListInfo;
 import com.github.quantrresearch.sharepoint.online.datastructure.ServerInfo;
@@ -481,7 +480,7 @@ public class ListPanel extends javax.swing.JPanel {
 						default:
 							System.err.println("Unsupported fieldTypeKind " + fieldTypeKind);
 					}
-					System.out.println(String.format("{'Title': '%s', 'FieldTypeKind': %d, '__metadata': { 'type': 'SP.Field' }}", title, fieldTypeKind));
+					//(String.format("{'Title': '%s', 'FieldTypeKind': %d, '__metadata': { 'type': 'SP.Field' }}", title, fieldTypeKind));
 					jsonString = SPOnline.post(token, serverInfo.domain, "/_api/web/lists(guid'" + listInfo.id + "')/Fields", String.format("{'Title': '%s', 'FieldTypeKind': %d, '__metadata': { 'type': 'SP.Field' }}", title, fieldTypeKind), formDigestValue);
 					if (jsonString != null) {
 						System.out.println(CommonLib.prettyFormatJson(jsonString));
@@ -536,7 +535,7 @@ public class ListPanel extends javax.swing.JPanel {
 			String jsonString = SPOnline.post(token, serverInfo.domain, serverInfo.path + "/_api/contextinfo", null, null);
 			jsonString = SPOnline.get(token, serverInfo.domain, serverInfo.path + "/_api/web/lists(guid'" + listInfo.id + "')/Fields");
 			if (jsonString != null) {
-				System.out.println(CommonLib.formatJson(jsonString));
+				//System.out.println(CommonLib.formatJson(jsonString));
 				JSONObject json = new JSONObject(jsonString);
 				JSONArray array = json.getJSONObject("d").getJSONArray("results");
 				for (int x = 0; x < array.length(); x++) {
@@ -608,7 +607,7 @@ public class ListPanel extends javax.swing.JPanel {
 								row.add(j.getString(field.internalName));
 							}
 						} catch (Exception ex) {
-							ex.printStackTrace();
+							//ex.printStackTrace();
 							if (field.internalName != null) {
 								row.add("ERROR " + field.internalName);
 							} else {

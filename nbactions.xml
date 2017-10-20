@@ -6,6 +6,8 @@
                 <packaging>*</packaging>
             </packagings>
             <goals>
+                <goal>-T</goal>
+                <goal>4</goal>
                 <goal>install</goal>
             </goals>
             <properties>
